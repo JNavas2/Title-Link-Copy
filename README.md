@@ -70,4 +70,4 @@ Creates a dual-format clipboard entry suitable for any destination:
     * **Improvement:** Smart Context Menu (Unifies Page and Link actions into a single, clean menu).
 
 * **v1.0.0**:
-    * Initial release with Title, URL, and AP-Style formatting support.
+    * **Initial Release** with Title, URL, and AP-Style formatting support.
