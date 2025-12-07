@@ -17,7 +17,7 @@ Right-click anywhere to access a clean, context-aware submenu that adapts to wha
     * 🔗 **URL only**
     * 🌐 **Hyperlink** (Copies as a clickable rich text link)
 
-### 📱 Responsive Popup (Desktop & Android)
+### 📱 Responsive Popup (Android)
 A clean, button-based interface available via the browser toolbar:
 * Quick-copy buttons for **Title+Link**, **Title Only**, **Link Only**, and **Hyperlink**.
 * **Embedded Settings:** Configure AP-Style casing and text placement directly inside the popup without opening a separate tab.
