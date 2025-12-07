@@ -1,0 +1,63 @@
+{
+  "manifest_version": 2,
+  "name": "Title-Link Copy",
+  "short_name": "Title-Link Copy",
+  "description": "AP-style title casing + selected text options for perfect link sharing",
+  "author": "John Navas",
+  "version": "1.0.0",
+  "homepage_url": "https://github.com/JNavas2/Title-Link-Copy",
+  "privacy_policy": "https://jnavas2.github.io/Title-Link-Copy/privacy.html",
+  "license": "MIT",
+  "browser_specific_settings": {
+    "gecko": {
+      "id": "titlelinkcopy@navasgroup.com",
+      "strict_min_version": "113.0",
+      "data_collection_permissions": {
+        "required": [
+          "none"
+        ]
+      }
+    }
+  },
+  "icons": {
+    "16": "images/icon-16.png",
+    "32": "images/icon-32.png",
+    "48": "images/icon-48.png",
+    "64": "images/icon-64.png",
+    "96": "images/icon-96.png",
+    "128": "images/icon-128.png"
+  },
+  "permissions": [
+    "activeTab",
+    "contextMenus",
+    "clipboardWrite"
+  ],
+  "background": {
+    "scripts": [
+      "utils.js",
+      "background.js"
+    ]
+  },
+  "commands": {
+    "copy-title-link": {
+      "description": "Copy current tab's Title + Link"
+    },
+    "copy-title-only": {
+      "description": "Copy current tab's Title (only)"
+    },
+    "copy-link-only": {
+      "description": "Copy current tab's Link (only)"
+    }
+  },
+  "browser_action": {
+    "default_popup": "popup.html",
+    "default_title": "Title-Link Copy …",
+    "default_icon": "images/icon-32.png"
+  },
+  "options_ui": {
+    "page": "options.html",
+    "chrome_style": false,
+    "open_in_tab": true
+  },
+  "content_security_policy": "script-src 'self'; object-src 'self';"
+}
