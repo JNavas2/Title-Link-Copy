@@ -25,7 +25,7 @@ A clean, button-based interface available via the browser toolbar:
 
 ### ⌨️ Keyboard Shortcuts
 Streamline your workflow with global shortcuts (customizable in Firefox Add-on settings):
-* Default commands available for all four copy modes, including `Copy Hyperlink`.
+* Commands available for all four copy modes, including `Copy Hyperlink`.
 
 ### 🧠 Advanced Formatting
 * **AP-Style Title Casing:** Features a smart algorithm that formats titles according to AP Stylebook guidelines.
