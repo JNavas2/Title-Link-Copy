@@ -1,22 +1,21 @@
 # Title-Link Copy: AP-style Title Casing & Hyperlinks
+Privacy-focused Firefox extension for Desktop and Android that creates perfect citations. Easily copy page titles, URLs, or **rich text hyperlinks** with advanced formatting options, including AP-Style smart capitalization and selected text citation.
 
-A privacy-focused Firefox extension for Desktop and Android that creates perfect citations. Easily copy page titles, URLs, or **rich text hyperlinks** with advanced formatting options, including AP-Style smart capitalization and selected text citation.
+## Browser Compatibility
+
+✅ **Fully Compatible with Firefox for Android** and **Firefox Desktop**.
+Unlike many clipboard extensions that only function on desktop, Title-Link Copy is optimized for the mobile experience. It features a responsive popup specifically designed for Android screens, allowing you to access advanced formatting options on the go.
 
 ## Features
 
-### 🖱️ Context Menus (Desktop)
-Right-click on the page background or specific links to access a dedicated submenu:
+### 🖱️ Smart Context Menu (Desktop)
+Right-click anywhere to access a clean, context-aware submenu that adapts to what you clicked:
 
-* **Page Actions** (Right-click anywhere on page):
-    * 📄 Title + Page URL
-    * 📄 Page Title only
-    * 🔗 Page URL only
-* **Link Actions** (Right-click on a link):
-    * 🔗 Link Text + URL
-    * 🔗 Link Text only
-    * 🔗 Link URL only
-* **Universal Action**:
-    * 🌐 **Hyperlink**: Copies a clickable, rich-text link of the Page (or the specific Link you clicked) to the clipboard.
+* **Smart Actions** (Works on Page Background OR Links):
+    * 📝 **Title + URL** (Copies Page Title/URL or Link Text/URL)
+    * 📋 **Title only**
+    * 🔗 **URL only**
+    * 🌐 **Hyperlink** (Copies as a clickable rich text link)
 
 ### 📱 Responsive Popup (Desktop & Android)
 A clean, button-based interface available via the browser toolbar:
@@ -37,6 +36,13 @@ Streamline your workflow with global shortcuts (customizable in Firefox Add-on s
 ### 🔒 Privacy Focused
 * **Zero Data Collection:** This extension does not track you, collect analytics, or transmit data.
 * **Minimal Permissions:** Requires only `activeTab`, `contextMenus`, and `clipboardWrite`. It uses local storage for settings, meaning it does **not** require the broad `storage` permission.
+
+## Permissions Explained
+This extension requests the absolute minimum permissions required to function. Here is exactly what each permission allows:
+
+* **`activeTab`**: This permission allows the extension to read the Title and URL of the *current* tab only when you explicitly interact with the extension (e.g., click the toolbar button or a context menu item). It does not run in the background on other tabs.
+* **`contextMenus`**: This allows the extension to add the "Title-Link Copy" items to your right-click menu.
+* **`clipboardWrite`**: This is required to programmatically write the formatted text (or rich text hyperlink) to your system clipboard.
 
 ## Usage Guide
 
@@ -61,5 +67,7 @@ Creates a dual-format clipboard entry suitable for any destination:
 
 * **v1.1.0**:
     * **New Feature:** Added "Hyperlink" (rich text) copy support.
+    * **Improvement:** Smart Context Menu (Unifies Page and Link actions into a single, clean menu).
+
 * **v1.0.0**:
     * Initial release with Title, URL, and AP-Style formatting support.
