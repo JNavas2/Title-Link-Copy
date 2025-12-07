@@ -4,12 +4,19 @@
  * © John Navas 2025, All Rights Reserved
  */
 
-function showStatus(message, duration = 2000) {
+// Updated to include autoClose parameter
+function showStatus(message, duration = 2000, autoClose = false) {
   const statusEl = document.getElementById('status-message');
   if (!statusEl) return;
   statusEl.textContent = message;
   statusEl.classList.add('show');
-  setTimeout(() => statusEl.classList.remove('show'), duration);
+  
+  setTimeout(() => {
+    statusEl.classList.remove('show');
+    if (autoClose) {
+      window.close();
+    }
+  }, duration);
 }
 
 document.addEventListener('DOMContentLoaded', async () => {
@@ -18,20 +25,21 @@ document.addEventListener('DOMContentLoaded', async () => {
     async 'copy-title-link'() {
       const tab = await browser.tabs.query({ active: true, currentWindow: true });
       if (!tab[0]) return;
-
+      
       const options = await getOptions();
       const title = tab[0].title;
       const url = tab[0].url;
-
+      
       const results = await browser.tabs.executeScript(tab[0].id, {
         code: 'window.getSelection().toString()'
       });
       const selectedText = results[0] || '';
-
+      
       const copyText = formatCopyText({ title, url, selectedText }, options);
       try {
         await copyToClipboard(copyText);
-        showStatus('✓ Title + Link copied!');
+        // Show success and close after 1.2 seconds
+        showStatus('✓ Title + Link copied!', 1200, true);
       } catch (err) {
         showStatus('✗ Failed to copy');
         console.error(err);
@@ -41,19 +49,19 @@ document.addEventListener('DOMContentLoaded', async () => {
     async 'copy-title-only'() {
       const tab = await browser.tabs.query({ active: true, currentWindow: true });
       if (!tab[0]) return;
-
+      
       const options = await getOptions();
       const title = tab[0].title;
-
+      
       const results = await browser.tabs.executeScript(tab[0].id, {
         code: 'window.getSelection().toString()'
       });
       const selectedText = results[0] || '';
-
+      
       const copyText = formatCopyText({ title, selectedText }, options);
       try {
         await copyToClipboard(copyText);
-        showStatus('✓ Title copied!');
+        showStatus('✓ Title copied!', 1200, true);
       } catch (err) {
         showStatus('✗ Failed to copy');
         console.error(err);
@@ -63,10 +71,10 @@ document.addEventListener('DOMContentLoaded', async () => {
     async 'copy-link-only'() {
       const tab = await browser.tabs.query({ active: true, currentWindow: true });
       if (!tab[0]) return;
-
+      
       try {
         await copyToClipboard(tab[0].url);
-        showStatus('✓ Link copied!');
+        showStatus('✓ Link copied!', 1200, true);
       } catch (err) {
         showStatus('✗ Failed to copy');
         console.error(err);
@@ -76,7 +84,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     async 'copy-hyperlink'() {
       const tab = await browser.tabs.query({ active: true, currentWindow: true });
       if (!tab[0]) return;
-
+      
       const options = await getOptions();
       const results = await browser.tabs.executeScript(tab[0].id, {
         code: 'window.getSelection().toString().trim()'
@@ -105,7 +113,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
       try {
         await copyAsHyperlink(html, plain);
-        showStatus('✓ Hyperlink copied!');
+        showStatus('✓ Hyperlink copied!', 1200, true);
       } catch (err) {
         showStatus('✗ Failed to copy');
         console.error(err);

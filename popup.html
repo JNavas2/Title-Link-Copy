@@ -8,7 +8,7 @@
   <style>
     /**
      * Title-Link Copy - Popup Styles - Auto-Save Options
-     * © John Navs 2025, All Rights Reserved
+     * © John Navas 2025, All Rights Reserved
      */
 
     * {
@@ -38,28 +38,39 @@
       overflow-y: auto;
     }
 
-    /* Quick Actions Section - Left-aligned with margins */
+    /* Quick Actions Section */
     .quick-actions {
       display: flex;
       flex-direction: column;
       gap: 8px;
       padding-top: 4px;
       margin: 0 16px;
-      /* Perfect margins only */
     }
 
+    /* Matches Settings Header style + Center alignment */
     .popup-instructions {
-      font-size: 13px;
-      color: #666;
+      font-size: 16px;
+      font-weight: 700;
+      color: #333;
+      margin-bottom: 4px;
+      text-align: center;
     }
 
-    /* UNIFIED BUTTON STYLES - Pure text sizing */
+    /* Wrapper for Center Alignment + Equal Width */
+    .button-group {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      width: fit-content; /* Shrink to fit the widest button */
+      margin: 0 auto;     /* Center the group horizontally */
+    }
+
+    /* UNIFIED BUTTON STYLES */
     .popup-button {
       display: flex;
       align-items: center;
       gap: 10px;
-      padding: 10px 12px;
-      /* Padding inside button only */
+      padding: 10px 16px;
       border-radius: 8px;
       border: 1px solid #d0d0d0;
       background: #f0f0f0;
@@ -69,8 +80,7 @@
       cursor: pointer;
       min-height: 44px;
       justify-content: flex-start;
-      width: fit-content;
-      /* Exact text width */
+      width: 100%; /* Stretch to fill the .button-group wrapper */
       white-space: nowrap;
     }
 
@@ -94,11 +104,11 @@
       white-space: nowrap;
     }
 
-    /* Options Section */
+    /* Options Section - Prominent Divider */
     .options-section {
       margin-top: 12px;
       padding-top: 12px;
-      border-top: 1px solid #eee;
+      border-top: 2px solid #ccc;
     }
 
     .options-header {
@@ -133,8 +143,9 @@
       margin-bottom: 6px;
     }
 
+    /* Font Size 13px */
     .setting-description {
-      font-size: 11px;
+      font-size: 13px;
       color: #999;
       margin-bottom: 6px;
       line-height: 1.3;
@@ -168,6 +179,13 @@
       width: 16px;
       height: 16px;
       accent-color: #667eea;
+      margin-top: 0; 
+    }
+
+    /* OPTICAL ALIGNMENT FIX: Increased to -3px */
+    .radio-label span {
+      position: relative;
+      top: -3px;
     }
 
     .checkbox-label {
@@ -192,6 +210,13 @@
       width: 16px;
       height: 16px;
       accent-color: #667eea;
+      margin-top: 0; 
+    }
+
+    /* OPTICAL ALIGNMENT FIX: Increased to -3px */
+    .checkbox-label span {
+      position: relative;
+      top: -3px;
     }
 
     .preview-group {
@@ -280,31 +305,33 @@
     <div class="quick-actions">
       <p class="popup-instructions">Select an option to copy:</p>
 
-      <button id="copy-title-link" class="popup-button">
-        <span class="button-icon">📝</span>
-        <span class="button-text">Title + Link</span>
-      </button>
+      <div class="button-group">
+        <button id="copy-title-link" class="popup-button">
+          <span class="button-icon">📝</span>
+          <span class="button-text">Title + Link</span>
+        </button>
 
-      <button id="copy-title-only" class="popup-button">
-        <span class="button-icon">📋</span>
-        <span class="button-text">Title only</span>
-      </button>
+        <button id="copy-title-only" class="popup-button">
+          <span class="button-icon">📋</span>
+          <span class="button-text">Title only</span>
+        </button>
 
-      <button id="copy-link-only" class="popup-button">
-        <span class="button-icon">🔗</span>
-        <span class="button-text">Link only</span>
-      </button>
+        <button id="copy-link-only" class="popup-button">
+          <span class="button-icon">🔗</span>
+          <span class="button-text">Link only</span>
+        </button>
 
-      <button id="copy-hyperlink" class="popup-button">
-        <span class="button-icon">🌐</span>
-        <span class="button-text">Hyperlink</span>
-      </button>
+        <button id="copy-hyperlink" class="popup-button">
+          <span class="button-icon">🌐</span>
+          <span class="button-text">Hyperlink</span>
+        </button>
+      </div>
 
       <div class="popup-status" id="status-message"></div>
     </div>
 
     <div class="options-section">
-      <h2 class="options-header">⚙️ Settings <span style="font-size: 10px; color: #666;">(Auto-save)</span></h2>
+      <h2 class="options-header">⚙️ Settings <span style="font-size: 13px; color: #666;">(Auto-save)</span></h2>
 
       <div class="combo-card">
         <div class="setting-group">
