@@ -1,4 +1,4 @@
-# Title-Link Copy: AP-style Title Casing & Hyperlinks
+# Title-Link Copy: AP-style Title Casing & Hyperlink
 Privacy-focused Firefox extension for Desktop and Android that creates perfect citations. Easily copy page titles, URLs, or **rich text hyperlinks** with advanced formatting options, including AP-Style smart capitalization and selected text citation.
 
 ## Browser Compatibility

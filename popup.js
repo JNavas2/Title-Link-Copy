@@ -10,7 +10,7 @@ function showStatus(message, duration = 2000, autoClose = false) {
   if (!statusEl) return;
   statusEl.textContent = message;
   statusEl.classList.add('show');
-  
+
   setTimeout(() => {
     statusEl.classList.remove('show');
     if (autoClose) {
@@ -25,16 +25,16 @@ document.addEventListener('DOMContentLoaded', async () => {
     async 'copy-title-link'() {
       const tab = await browser.tabs.query({ active: true, currentWindow: true });
       if (!tab[0]) return;
-      
+
       const options = await getOptions();
       const title = tab[0].title;
       const url = tab[0].url;
-      
+
       const results = await browser.tabs.executeScript(tab[0].id, {
         code: 'window.getSelection().toString()'
       });
       const selectedText = results[0] || '';
-      
+
       const copyText = formatCopyText({ title, url, selectedText }, options);
       try {
         await copyToClipboard(copyText);
@@ -49,15 +49,15 @@ document.addEventListener('DOMContentLoaded', async () => {
     async 'copy-title-only'() {
       const tab = await browser.tabs.query({ active: true, currentWindow: true });
       if (!tab[0]) return;
-      
+
       const options = await getOptions();
       const title = tab[0].title;
-      
+
       const results = await browser.tabs.executeScript(tab[0].id, {
         code: 'window.getSelection().toString()'
       });
       const selectedText = results[0] || '';
-      
+
       const copyText = formatCopyText({ title, selectedText }, options);
       try {
         await copyToClipboard(copyText);
@@ -71,7 +71,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     async 'copy-link-only'() {
       const tab = await browser.tabs.query({ active: true, currentWindow: true });
       if (!tab[0]) return;
-      
+
       try {
         await copyToClipboard(tab[0].url);
         showStatus('✓ Link copied!', 1200, true);
@@ -84,7 +84,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     async 'copy-hyperlink'() {
       const tab = await browser.tabs.query({ active: true, currentWindow: true });
       if (!tab[0]) return;
-      
+
       const options = await getOptions();
       const results = await browser.tabs.executeScript(tab[0].id, {
         code: 'window.getSelection().toString().trim()'

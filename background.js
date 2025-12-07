@@ -14,27 +14,27 @@ function initializeContextMenus() {
   });
 
   // Generic Item 1: Title + URL
-  browser.contextMenus.create({ 
-    id: "ttlc-action-title-url", 
-    parentId: "ttlc-main-menu", 
-    title: "📝 Title + URL", 
-    contexts: ["page", "selection", "link"] 
+  browser.contextMenus.create({
+    id: "ttlc-action-title-url",
+    parentId: "ttlc-main-menu",
+    title: "📝 Title + URL",
+    contexts: ["page", "selection", "link"]
   });
 
   // Generic Item 2: Title Only
-  browser.contextMenus.create({ 
-    id: "ttlc-action-title-only", 
-    parentId: "ttlc-main-menu", 
-    title: "📋 Title only", 
-    contexts: ["page", "selection", "link"] 
+  browser.contextMenus.create({
+    id: "ttlc-action-title-only",
+    parentId: "ttlc-main-menu",
+    title: "📋 Title only",
+    contexts: ["page", "selection", "link"]
   });
 
   // Generic Item 3: URL Only
-  browser.contextMenus.create({ 
-    id: "ttlc-action-url-only", 
-    parentId: "ttlc-main-menu", 
-    title: "🔗 URL only", 
-    contexts: ["page", "selection", "link"] 
+  browser.contextMenus.create({
+    id: "ttlc-action-url-only",
+    parentId: "ttlc-main-menu",
+    title: "🔗 URL only",
+    contexts: ["page", "selection", "link"]
   });
 
   // Generic Item 4: Hyperlink
@@ -77,7 +77,7 @@ browser.contextMenus.onClicked.addListener((info, tab) => {
 
     if (isLinkAction) {
       // Context: Link
-      title = info.linkText || info.selectionText || 'Link'; 
+      title = info.linkText || info.selectionText || 'Link';
       url = info.linkUrl;
     } else {
       // Context: Page Background
@@ -103,10 +103,10 @@ browser.contextMenus.onClicked.addListener((info, tab) => {
         if (options.useApTitleCase) {
           linkTitle = apStyleTitleCase(linkTitle);
         }
-        
+
         let html = `<a href="${url}">${linkTitle}</a>`;
         let plain = `${linkTitle}\n${url}`;
-        
+
         // Handle selected text placement
         if (selectedText && options.selectedTextPlacement !== 'none') {
           if (options.selectedTextPlacement === 'above') {
@@ -117,7 +117,7 @@ browser.contextMenus.onClicked.addListener((info, tab) => {
             plain = `${linkTitle}\n${url}\n${selectedText}`;
           }
         }
-        
+
         copyAsHyperlink(html, plain);
         break;
       }
@@ -142,16 +142,16 @@ browser.commands.onCommand.addListener(async (command) => {
 
   switch (command) {
     case 'copy-title-link':
-      const titleLinkText = formatCopyText({ 
-        title: tab[0].title, 
-        url: tab[0].url 
+      const titleLinkText = formatCopyText({
+        title: tab[0].title,
+        url: tab[0].url
       }, options);
       copyToClipboard(titleLinkText);
       break;
 
     case 'copy-title-only':
-      const titleOnlyText = formatCopyText({ 
-        title: tab[0].title 
+      const titleOnlyText = formatCopyText({
+        title: tab[0].title
       }, options);
       copyToClipboard(titleOnlyText);
       break;
@@ -165,15 +165,15 @@ browser.commands.onCommand.addListener(async (command) => {
         code: 'window.getSelection().toString().trim()'
       });
       const selectedText = results[0] || '';
-      
+
       let title = tab[0].title;
       if (options.useApTitleCase) {
         title = apStyleTitleCase(title);
       }
-      
+
       let html = `<a href="${tab[0].url}">${title}</a>`;
       let plain = `${title}\n${tab[0].url}`;
-      
+
       if (selectedText && options.selectedTextPlacement !== 'none') {
         if (options.selectedTextPlacement === 'above') {
           html = `${escapeHtml(selectedText)}<br><a href="${tab[0].url}">${title}</a>`;
@@ -183,7 +183,7 @@ browser.commands.onCommand.addListener(async (command) => {
           plain = `${title}\n${tab[0].url}\n${selectedText}`;
         }
       }
-      
+
       copyAsHyperlink(html, plain);
       break;
     }
