@@ -7,71 +7,36 @@
 
 // Common articles, conjunctions, prepositions ≤3 letters
 const minorWords = new Set([
-  "a", "an", "the",      // articles
+  "a", "an", "the",       // articles
   "and", "but", "for", "nor", "or", "so", "yet", // conjunctions
   "as", "at", "by", "in", "of", "off", "on", "per", "to", "up", "via" // prepositions
 ]);
 
-/**
- * Checks if a word is all uppercase (ignores non-letter characters).
- * @param {string} word
- * @returns {boolean}
- */
 function isAllUpperCase(word) {
-  // Only consider letters for the uppercase check
   const letters = word.match(/\p{L}+/gu);
   if (!letters) return false;
   return letters.join('') === letters.join('').toUpperCase();
 }
 
-/**
- * Splits a word into its base part and possessive suffix (if any).
- * @param {string} word - The input word to split.
- * @returns {{ base: string, suffix: string }} - The base word and suffix.
- */
 function splitBaseAndSuffix(word) {
   const match = word.match(/^([\p{L}\d]+)(['']s)$/u);
   if (match) {
-    return {
-      base: match[1],
-      suffix: match[2],
-    };
+    return { base: match[1], suffix: match[2] };
   }
-  return {
-    base: word,
-    suffix: '',
-  };
+  return { base: word, suffix: '' };
 }
 
-/**
- * Checks if a string has internal capitals (e.g., "iPhone", "DeLorean"). 
- * @param {string} str - The input string to check.     
- * @return {boolean} - True if the string has internal capitals, false otherwise.
- */
 function hasInternalCapitals(str) {
   return /\p{Lu}/u.test(str.slice(1));
 }
 
-/**
- * Parses the input text into words and separators.
- * @param {string} text - The text to parse.
- * @returns {{words: string[], separators: string[]}}
- */
 function parseText(text) {
   const wordRegex = /(?:\d+\p{L}+|[\p{L}]+(?:[''][\p{L}]+)?|\d+)/gu;
   const words = text.match(wordRegex) || [];
   const separators = text.split(wordRegex);
-  return {
-    words,
-    separators,
-  };
+  return { words, separators };
 }
 
-/**
- * Reassembles text from words and separators arrays.
- * @param {{words: string[], separators: string[]}} param0
- * @returns {string}
- */
 function reassembleText({ words, separators }) {
   let result = '';
   const maxLen = Math.max(words.length, separators.length);
@@ -84,9 +49,6 @@ function reassembleText({ words, separators }) {
 
 /**
  * Converts text to AP-style title case
- * Follows AP Stylebook rules for title casing
- * @param {string} text - The text to convert to title case
- * @returns {string} - The text in AP-style title case
  */
 function apStyleTitleCase(text) {
   if (!text) return '';
@@ -100,19 +62,16 @@ function apStyleTitleCase(text) {
     const word = words[i];
     const { base, suffix } = splitBaseAndSuffix(word);
 
-    // 1. Preserve ALL-UPPERCASE words (acronyms, etc.), but lowercase suffix
     if (isAllUpperCase(base)) {
       result.push(base + suffix.toLowerCase());
       continue;
     }
 
-    // 2. Preserve words with internal capitals (proper names, brands)
     if (hasInternalCapitals(base)) {
       result.push(base + suffix);
       continue;
     }
 
-    // 3. Preserve words starting with a digit (ordinals, etc.)
     if (/^\d/.test(base)) {
       result.push(base + suffix);
       continue;
@@ -121,59 +80,50 @@ function apStyleTitleCase(text) {
     const lowerBase = base.toLowerCase();
     const lowerSuffix = suffix.toLowerCase();
 
-    // 4. Always capitalize first and last word
     if (i === 0 || i === len - 1) {
-      result.push(
-        lowerBase.charAt(0).toUpperCase() +
-        lowerBase.slice(1) +
-        lowerSuffix
-      );
+      result.push(lowerBase.charAt(0).toUpperCase() + lowerBase.slice(1) + lowerSuffix);
       continue;
     }
 
-    // 5. Capitalize "to" in infinitives (optional rule)
     if (lowerBase === "to" && i + 1 < len) {
       result.push("To");
       continue;
     }
 
-    // 6. Capitalize all words of 4+ letters
     if (base.length >= 4) {
-      result.push(
-        lowerBase.charAt(0).toUpperCase() +
-        lowerBase.slice(1) +
-        lowerSuffix
-      );
+      result.push(lowerBase.charAt(0).toUpperCase() + lowerBase.slice(1) + lowerSuffix);
       continue;
     }
 
-    // 7. Do not capitalize minor words (if 3 letters or fewer)
     if (minorWords.has(lowerBase)) {
       result.push(lowerBase + lowerSuffix);
       continue;
     }
 
-    // 8. Otherwise, capitalize principal words
-    result.push(
-      lowerBase.charAt(0).toUpperCase() +
-      lowerBase.slice(1) +
-      lowerSuffix
-    );
+    result.push(lowerBase.charAt(0).toUpperCase() + lowerBase.slice(1) + lowerSuffix);
   }
 
   return reassembleText({ words: result, separators: parsed.separators });
 }
 
 /**
- * Format copy text with multiple items on separate lines
- * @param {Object} items - Object with title, url, and selectedText properties
- * @param {Object} options - Copy options including text placement and title casing
- * @returns {string} - Formatted text for clipboard
+ * Escape HTML special characters
  */
+function escapeHtml(str) {
+  return str.replace(/[&<>"']/g, m =>
+    ({
+      '&': '&amp;',
+      '<': '&lt;',
+      '>': '&gt;',
+      '"': '&quot;',
+      "'": '&#39;'
+    })[m]
+  );
+}
+
 function formatCopyText(items, options) {
   const lines = [];
 
-  // Add title if applicable
   if (items.title) {
     let title = items.title;
     if (options.useApTitleCase) {
@@ -182,17 +132,14 @@ function formatCopyText(items, options) {
     lines.push(title);
   }
 
-  // Add selected text based on placement option
   if (items.selectedText && options.selectedTextPlacement === 'above') {
     lines.push(items.selectedText);
   }
 
-  // Add URL if applicable
   if (items.url) {
     lines.push(items.url);
   }
 
-  // Add selected text if placement is 'below'
   if (items.selectedText && options.selectedTextPlacement === 'below') {
     lines.push(items.selectedText);
   }
@@ -200,57 +147,26 @@ function formatCopyText(items, options) {
   return lines.join('\n');
 }
 
-/**
- * Copy text to clipboard - Firefox WebExtension optimized
- * Primary: browser.clipboard.setString() → navigator.clipboard → execCommand fallback
- * @param {string} text - Text to copy to clipboard
- * @returns {Promise<void>}
- */
-function copyToClipboard(text) {
-  // 1. Firefox WebExtension API (works in background/popup scripts)
-  if (typeof browser !== 'undefined' && browser.clipboard && browser.clipboard.setString) {
-    return browser.clipboard.setString(text).catch(err => {
-      console.warn('browser.clipboard failed, trying fallback:', err);
-      return fallbackCopy(text);
-    });
-  }
-
-  // 2. Modern Clipboard API (popup/options pages, secure contexts)
-  if (navigator.clipboard && window.isSecureContext) {
-    return navigator.clipboard.writeText(text).catch(err => {
-      console.warn('Clipboard API failed, trying fallback:', err);
-      return fallbackCopy(text);
-    });
-  }
-
-  // 3. Enhanced execCommand fallback
-  return fallbackCopy(text);
-}
-
-/**
- * Fallback using document.execCommand with Firefox compatibility fixes
- * @param {string} text
- * @returns {Promise<void>}
- */
 function fallbackCopy(text) {
   return new Promise((resolve, reject) => {
+    if (typeof document === 'undefined' || !document.body) {
+      return reject(new Error('No DOM available for fallback copy'));
+    }
+
     const textArea = document.createElement('textarea');
     textArea.value = text;
     textArea.style.position = 'fixed';
     textArea.style.left = '-999999px';
     textArea.style.top = '-999999px';
     textArea.style.opacity = '0';
-    textArea.setAttribute('readonly', ''); // Firefox security fix
+    textArea.setAttribute('readonly', '');
 
     document.body.appendChild(textArea);
 
     try {
       textArea.focus();
       textArea.select();
-
-      // Firefox requires user gesture context for execCommand
       const successful = document.execCommand('copy');
-
       document.body.removeChild(textArea);
 
       if (successful) {
@@ -265,66 +181,96 @@ function fallbackCopy(text) {
   });
 }
 
-/**
- * Get default options from storage or return defaults
- * @returns {Promise<Object>} - Options object
- */
+function copyToClipboard(text) {
+  if (typeof browser !== 'undefined' && browser.clipboard && browser.clipboard.setString) {
+    return browser.clipboard.setString(text).catch(err => {
+      console.warn('browser.clipboard failed:', err);
+      return Promise.resolve(); // Don't fallback to DOM in background
+    });
+  }
+
+  if (typeof navigator !== 'undefined' && navigator.clipboard && typeof window !== 'undefined' && window.isSecureContext) {
+    return navigator.clipboard.writeText(text).catch(err => {
+      console.warn('Clipboard API failed:', err);
+      return fallbackCopy(text);
+    });
+  }
+
+  return fallbackCopy(text);
+}
+
+async function copyAsHyperlink(html, plain) {
+  if (typeof navigator !== 'undefined' && navigator.clipboard && window.ClipboardItem) {
+    try {
+      const item = new ClipboardItem({
+        "text/html": new Blob([html], { type: "text/html" }),
+        "text/plain": new Blob([plain], { type: "text/plain" })
+      });
+      await navigator.clipboard.write([item]);
+      return;
+    } catch (e) {
+      console.warn('HTML clipboard copy failed, using fallback', e);
+    }
+  }
+  await copyToClipboard(plain);
+}
+
 function getOptions() {
-  // Use localStorage to avoid requiring the `storage` permission.
-  // Return a Promise for compatibility with existing callers.
-  return new Promise((resolve) => {
+  const defaults = { selectedTextPlacement: 'below', useApTitleCase: false };
+
+  // Background / extension context: use browser.storage.local when available
+  if (typeof browser !== 'undefined' && browser.storage && browser.storage.local && browser.storage.local.get) {
+    return browser.storage.local.get(defaults).then(result => {
+      const opts = {
+        selectedTextPlacement: result.selectedTextPlacement || 'below',
+        useApTitleCase: !!result.useApTitleCase
+      };
+
+      // In UI contexts, cache to localStorage for faster access
+      try {
+        if (typeof window !== 'undefined' && window.localStorage) {
+          localStorage.setItem('ttlcOptions', JSON.stringify(opts));
+        }
+      } catch (e) { }
+
+      return opts;
+    }).catch(() => defaults);
+  }
+
+  // UI-only localStorage fallback
+  if (typeof window !== 'undefined' && window.localStorage) {
     try {
       const raw = localStorage.getItem('ttlcOptions');
       if (raw) {
         const parsed = JSON.parse(raw);
-        resolve({
+        return Promise.resolve({
           selectedTextPlacement: parsed.selectedTextPlacement || 'below',
-          useApTitleCase: parsed.useApTitleCase || false
+          useApTitleCase: !!parsed.useApTitleCase
         });
-        return;
       }
-    } catch (e) {
-      // Fall through to defaults/migration
-    }
+    } catch (e) { }
+  }
 
-    // Attempt migration from browser.storage.local if available (best-effort)
-    try {
-      if (window.browser && browser.storage && browser.storage.local && browser.storage.local.get) {
-        // Use Promise form if available
-        const maybePromise = browser.storage.local.get({ selectedTextPlacement: 'below', useApTitleCase: false });
-        if (maybePromise && typeof maybePromise.then === 'function') {
-          maybePromise.then((result) => {
-            const opts = {
-              selectedTextPlacement: result.selectedTextPlacement || 'below',
-              useApTitleCase: result.useApTitleCase || false
-            };
-            try { localStorage.setItem('ttlcOptions', JSON.stringify(opts)); } catch (e) { }
-            resolve(opts);
-          }).catch(() => resolve({ selectedTextPlacement: 'below', useApTitleCase: false }));
-          return;
-        }
-      }
-    } catch (e) {
-      // ignore migration errors
-    }
-
-    // Default options
-    resolve({ selectedTextPlacement: 'below', useApTitleCase: false });
-  });
+  return Promise.resolve(defaults);
 }
 
-/**
- * Save options to storage
- * @param {Object} options - Options to save
- * @returns {Promise<void>}
- */
 function saveOptions(options) {
-  return new Promise((resolve) => {
+  const opts = {
+    selectedTextPlacement: options.selectedTextPlacement || 'below',
+    useApTitleCase: !!options.useApTitleCase
+  };
+
+  const promises = [];
+
+  if (typeof browser !== 'undefined' && browser.storage && browser.storage.local && browser.storage.local.set) {
+    promises.push(browser.storage.local.set(opts));
+  }
+
+  if (typeof window !== 'undefined' && window.localStorage) {
     try {
-      localStorage.setItem('ttlcOptions', JSON.stringify(options));
-    } catch (e) {
-      // ignore write errors
-    }
-    resolve();
-  });
+      localStorage.setItem('ttlcOptions', JSON.stringify(opts));
+    } catch (e) { }
+  }
+
+  return Promise.all(promises).then(() => { });
 }

@@ -1,12 +1,11 @@
 /**
- * Title-Link Copy - Background Script (FINAL: Full Selection + Link Support)
+ * Title-Link Copy - Background Script
  * © John Navas 2025, All Rights Reserved
  */
 
 function initializeContextMenus() {
   browser.contextMenus.removeAll();
 
-  // MAIN MENU - appears on page, selection, OR links
   browser.contextMenus.create({
     id: "ttlc-main-menu",
     title: "Title-Link Copy",
@@ -14,11 +13,11 @@ function initializeContextMenus() {
     documentUrlPatterns: ["<all_urls>"]
   });
 
-  // PAGE ACTIONS (right-click page background OR selected text)
+  // Page menu items - correct (page + selection)
   browser.contextMenus.create({
     id: "ttlc-page-title-link",
     parentId: "ttlc-main-menu",
-    title: "📄 Title + Page URL",
+    title: "📄 Page Title + URL",
     contexts: ["page", "selection"]
   });
   browser.contextMenus.create({
@@ -34,27 +33,34 @@ function initializeContextMenus() {
     contexts: ["page", "selection"]
   });
 
-  // LINK ACTIONS (right-click links + selection support)
+  // LINK MENU ITEMS
   browser.contextMenus.create({
     id: "ttlc-link-text-url",
     parentId: "ttlc-main-menu",
     title: "🔗 Link Text + URL",
-    contexts: ["link", "selection"]
+    contexts: ["link"]
   });
   browser.contextMenus.create({
     id: "ttlc-link-text-only",
     parentId: "ttlc-main-menu",
     title: "🔗 Link Text only",
-    contexts: ["link", "selection"]
+    contexts: ["link"]
   });
   browser.contextMenus.create({
     id: "ttlc-link-url-only",
     parentId: "ttlc-main-menu",
     title: "🔗 Link URL only",
-    contexts: ["link", "selection"]
+    contexts: ["link"]
   });
 
-  // SEPARATOR
+  // Unified Hyperlink menu item
+  browser.contextMenus.create({
+    id: "ttlc-universal-hyperlink",
+    parentId: "ttlc-main-menu",
+    title: "🌐 Hyperlink",
+    contexts: ["page", "selection", "link"]
+  });
+
   browser.contextMenus.create({
     id: "ttlc-separator",
     type: "separator",
@@ -62,7 +68,6 @@ function initializeContextMenus() {
     contexts: ["page", "selection", "link"]
   });
 
-  // OPTIONS (all contexts)
   browser.contextMenus.create({
     id: "ttlc-options",
     parentId: "ttlc-main-menu",
@@ -80,56 +85,65 @@ browser.contextMenus.onClicked.addListener((info, tab) => {
   getOptions().then((options) => {
     let title = '';
     let url = '';
-    let selectedText = info.selectionText || '';  // ALWAYS capture selection
+    // Priority: User selection -> Link Text -> Page Title
+    let selectedText = info.selectionText || '';
 
-    // PAGE MENU ITEMS (page/selection context) - use tab info
-    if (info.menuItemId.startsWith('ttlc-page-')) {
+    // If info.linkUrl exists, the user right-clicked a link. 
+    // This applies to explicit link commands OR the generic hyperlink command.
+    const isLinkAction = !!info.linkUrl;
+
+    if (isLinkAction) {
+      // User clicked a link
+      title = info.linkText || info.selectionText || 'Link'; // Fallback logic
+      url = info.linkUrl;
+    } else {
+      // User clicked the page background or generic selection
       title = tab.title;
       url = tab.url;
     }
-    // LINK MENU ITEMS (link/selection context) - use link info OR fallback to tab
-    else if (info.menuItemId.startsWith('ttlc-link-')) {
-      if (info.linkUrl) {
-        // Actual link clicked
-        title = info.linkText || 'Link';
-        url = info.linkUrl;
-      } else {
-        // Selection context on non-link (fallback to page)
-        title = tab.title;
-        url = tab.url;
-      }
-    } else {
-      return;
-    }
 
-    // Format based on menu item + options
-    let copyText = '';
     switch (info.menuItemId) {
       case 'ttlc-page-title-link':
       case 'ttlc-link-text-url':
-        copyText = formatCopyText({ title, url, selectedText }, options);
+        copyToClipboard(formatCopyText({ title, url, selectedText }, options));
         break;
       case 'ttlc-page-title-only':
       case 'ttlc-link-text-only':
-        copyText = formatCopyText({ title, selectedText }, options);
+        copyToClipboard(formatCopyText({ title, selectedText }, options));
         break;
       case 'ttlc-page-link-only':
       case 'ttlc-link-url-only':
-        copyText = formatCopyText({ url }, options);
+        copyToClipboard(formatCopyText({ url }, options));
         break;
-      default:
+      case 'ttlc-universal-hyperlink': {
+        let linkTitle = title;
+        if (options.useApTitleCase) {
+          linkTitle = apStyleTitleCase(linkTitle);
+        }
+
+        let html = `<a href="${url}">${linkTitle}</a>`;
+        let plain = `${linkTitle}\n${url}`;
+
+        // Handle selected text placement
+        if (selectedText && options.selectedTextPlacement !== 'none') {
+          if (options.selectedTextPlacement === 'above') {
+            html = `${escapeHtml(selectedText)}<br><a href="${url}">${linkTitle}</a>`;
+            plain = `${selectedText}\n${linkTitle}\n${url}`;
+          } else {
+            html = `<a href="${url}">${linkTitle}</a><br>${escapeHtml(selectedText)}`;
+            plain = `${linkTitle}\n${url}\n${selectedText}`;
+          }
+        }
+
+        copyAsHyperlink(html, plain);
         return;
+      }
     }
 
-    copyToClipboard(copyText).then(() => {
-      console.log('Title-Link Copy: Copied:', copyText);
-    }).catch((err) => {
-      console.error('Failed to copy:', err);
-    });
-  });
+    console.log('Title-Link Copy: Copied via context menu');
+  }).catch(console.error);
 });
 
-// Initialize on extension install/update
 browser.runtime.onInstalled.addListener((details) => {
   if (details.reason === 'install') {
     browser.tabs.create({ url: 'options.html' });
@@ -137,35 +151,64 @@ browser.runtime.onInstalled.addListener((details) => {
   initializeContextMenus();
 });
 
-// Initialize menus on startup
 initializeContextMenus();
 
-// Keyboard shortcuts (popup-style - no selection)
 browser.commands.onCommand.addListener(async (command) => {
   const tab = await browser.tabs.query({ active: true, currentWindow: true });
   if (!tab[0]) return;
 
   const options = await getOptions();
-  let copyText = '';
 
   switch (command) {
     case 'copy-title-link':
-      copyText = formatCopyText({ title: tab[0].title, url: tab[0].url }, options);
+      const titleLinkText = formatCopyText({
+        title: tab[0].title,
+        url: tab[0].url
+      }, options);
+      copyToClipboard(titleLinkText);
+      console.log('Title-Link Copy (shortcut): Title + Link copied');
       break;
-    case 'copy-title-only':
-      copyText = formatCopyText({ title: tab[0].title }, options);
-      break;
-    case 'copy-link-only':
-      copyText = formatCopyText({ url: tab[0].url }, options);
-      break;
-  }
 
-  if (copyText) {
-    try {
-      await copyToClipboard(copyText);
-      console.log('Title-Link Copy (keyboard): Copied:', copyText);
-    } catch (err) {
-      console.error('Failed to copy:', err);
+    case 'copy-title-only':
+      const titleOnlyText = formatCopyText({
+        title: tab[0].title
+      }, options);
+      copyToClipboard(titleOnlyText);
+      console.log('Title-Link Copy (shortcut): Title copied');
+      break;
+
+    case 'copy-link-only':
+      copyToClipboard(tab[0].url);
+      console.log('Title-Link Copy (shortcut): Link copied');
+      break;
+
+    case 'copy-hyperlink': {
+      const results = await browser.tabs.executeScript(tab[0].id, {
+        code: 'window.getSelection().toString().trim()'
+      });
+      const selectedText = results[0] || '';
+
+      let title = tab[0].title;
+      if (options.useApTitleCase) {
+        title = apStyleTitleCase(title);
+      }
+
+      let html = `<a href="${tab[0].url}">${title}</a>`;
+      let plain = `${title}\n${tab[0].url}`;
+
+      if (selectedText && options.selectedTextPlacement !== 'none') {
+        if (options.selectedTextPlacement === 'above') {
+          html = `${escapeHtml(selectedText)}<br><a href="${tab[0].url}">${title}</a>`;
+          plain = `${selectedText}\n${title}\n${tab[0].url}`;
+        } else {
+          html = `<a href="${tab[0].url}">${title}</a><br>${escapeHtml(selectedText)}`;
+          plain = `${title}\n${tab[0].url}\n${selectedText}`;
+        }
+      }
+
+      copyAsHyperlink(html, plain);
+      console.log('Title-Link Copy (shortcut): Hyperlink copied');
+      break;
     }
   }
 });

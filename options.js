@@ -6,9 +6,11 @@
 
 function showAutoSaveStatus(message = '✓ Settings auto-saved') {
   const statusEl = document.getElementById('auto-save-status');
+  if (!statusEl) return;
+
   statusEl.textContent = message;
   statusEl.classList.add('show');
-  
+
   setTimeout(() => {
     statusEl.classList.remove('show');
   }, 2000);
@@ -20,24 +22,25 @@ function showAutoSaveStatus(message = '✓ Settings auto-saved') {
 function updatePreview() {
   const titleEl = document.getElementById('preview-title');
   const selectedEl = document.getElementById('preview-selected');
-  const useApTitleCase = document.getElementById('ap-title-case').checked;
+  const apCheckbox = document.getElementById('ap-title-case');
+  const placementInput = document.querySelector('input[name="text-placement"]:checked');
 
+  if (!titleEl || !selectedEl || !apCheckbox || !placementInput) return;
+
+  const useApTitleCase = apCheckbox.checked;
   let title = 'example title here';
   if (useApTitleCase) {
     title = apStyleTitleCase(title);
   }
   titleEl.textContent = title;
 
-  // Show/hide selected text preview
-  const placement = document.querySelector('input[name="text-placement"]:checked').value;
+  const placement = placementInput.value;
   if (placement === 'none') {
     selectedEl.classList.add('hidden');
   } else {
     selectedEl.classList.remove('hidden');
-    // Reorder preview if needed
     const previewBox = document.querySelector('.preview-box');
-    const linkEl = document.getElementById('preview-link');
-
+    if (!previewBox) return;
     if (placement === 'above') {
       previewBox.insertBefore(selectedEl, previewBox.children[0]);
     } else {
@@ -52,8 +55,8 @@ function updatePreview() {
 async function autoSaveSettings() {
   const selectedTextPlacement = document.querySelector(
     'input[name="text-placement"]:checked'
-  ).value;
-  const useApTitleCase = document.getElementById('ap-title-case').checked;
+  )?.value || 'below';
+  const useApTitleCase = document.getElementById('ap-title-case')?.checked || false;
 
   const options = {
     selectedTextPlacement,
@@ -78,26 +81,35 @@ async function loadSettings() {
     placementRadio.checked = true;
   } else {
     // Default to 'below' if not found
-    document.getElementById('placement-below').checked = true;
+    const defaultRadio = document.getElementById('placement-below');
+    if (defaultRadio) defaultRadio.checked = true;
   }
 
   // Set AP title case checkbox
-  document.getElementById('ap-title-case').checked = options.useApTitleCase;
+  const apCheckbox = document.getElementById('ap-title-case');
+  if (apCheckbox) {
+    apCheckbox.checked = options.useApTitleCase;
+  }
 
   updatePreview();
 }
 
-// Event listeners - Auto-save on ALL changes
-document.addEventListener('DOMContentLoaded', loadSettings);
+// SINGLE DOMContentLoaded handler for ALL initialization
+document.addEventListener('DOMContentLoaded', () => {
+  loadSettings();
 
-document.querySelectorAll('input[name="text-placement"]').forEach(radio => {
-  radio.addEventListener('change', () => {
-    updatePreview();
-    autoSaveSettings();
+  document.querySelectorAll('input[name="text-placement"]').forEach(radio => {
+    radio.addEventListener('change', () => {
+      updatePreview();
+      autoSaveSettings();
+    });
   });
-});
 
-document.getElementById('ap-title-case').addEventListener('change', () => {
-  updatePreview();
-  autoSaveSettings();
+  const apCheckbox = document.getElementById('ap-title-case');
+  if (apCheckbox) {
+    apCheckbox.addEventListener('change', () => {
+      updatePreview();
+      autoSaveSettings();
+    });
+  }
 });

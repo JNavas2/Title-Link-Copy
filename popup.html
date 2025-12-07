@@ -277,7 +277,6 @@
 
 <body>
   <div class="popup-container">
-    <!-- Quick Actions (Header removed for Android) -->
     <div class="quick-actions">
       <p class="popup-instructions">Select an option to copy:</p>
 
@@ -296,10 +295,14 @@
         <span class="button-text">Link only</span>
       </button>
 
+      <button id="copy-hyperlink" class="popup-button">
+        <span class="button-icon">🌐</span>
+        <span class="button-text">Hyperlink</span>
+      </button>
+
       <div class="popup-status" id="status-message"></div>
     </div>
 
-    <!-- Auto-Save Options UI -->
     <div class="options-section">
       <h2 class="options-header">⚙️ Settings <span style="font-size: 10px; color: #666;">(Auto-save)</span></h2>
 
@@ -347,8 +350,8 @@
   </div>
 
   <script src="utils.js"></script>
-  <script src="popup.js"></script>
   <script src="options.js"></script>
+  <script src="popup.js"></script>
 </body>
 
 </html>
