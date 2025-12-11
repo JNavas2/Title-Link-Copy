@@ -5,9 +5,9 @@
  * © John Navas 2025, All Rights Reserved
  */
 
-// Common articles, conjunctions, prepositions ≤3 letters
+// Common articles, conjunctions, and prepositions ≤3 letters
 const minorWords = new Set([
-  "a", "an", "the",       // articles
+  "a", "an", "the", // articles
   "and", "but", "for", "nor", "or", "so", "yet", // conjunctions
   "as", "at", "by", "in", "of", "off", "on", "per", "to", "up", "via" // prepositions
 ]);
@@ -25,7 +25,8 @@ function isAllUpperCase(word) {
  * Splits a word into base part and possessive suffix ('s or ’s, if any).
  */
 function splitBaseAndSuffix(word) {
-  const match = word.match(/^([\p{L}\d]+)(['’]s)$/u); // Fixed: handle straight & curly apostrophes
+  // Fixed: supports both straight and curly apostrophes
+  const match = word.match(/^([\p{L}\d]+)(['’]s)$/u);
   if (match) {
     return { base: match[1], suffix: match[2] };
   }
@@ -33,7 +34,7 @@ function splitBaseAndSuffix(word) {
 }
 
 /**
- * Checks if the word has internal capitals, e.g. "iPhone" or "McDonald's".
+ * Checks if the word has internal capitals, e.g., "iPhone" or "McDonald's".
  */
 function hasInternalCapitals(str) {
   return /\p{Lu}/u.test(str.slice(1));
@@ -41,10 +42,10 @@ function hasInternalCapitals(str) {
 
 /**
  * Parses the input text into words and separators.
- * Handles curly and straight apostrophes in contractions and possessives.
+ * Handles both straight and curly apostrophes in contractions and possessives.
  */
 function parseText(text) {
-  const wordRegex = /(?:\d+\p{L}+|[\p{L}]+(?:['’][\p{L}]+)?|\d+)/gu; // Fixed: curly + straight
+  const wordRegex = /(?:\d+\p{L}+|[\p{L}]+(?:['’][\p{L}]+)?|\d+)/gu;
   const words = text.match(wordRegex) || [];
   const separators = text.split(wordRegex);
   return { words, separators };
@@ -128,7 +129,7 @@ function apStyleTitleCase(text) {
 }
 
 /**
- * Escape HTML special characters for safe clipboard copying.
+ * Escapes HTML special characters for safe clipboard copying.
  */
 function escapeHtml(str) {
   return str.replace(/[&<>"']/g, m =>
@@ -172,7 +173,7 @@ function formatCopyText(items, options) {
 }
 
 /**
- * Fallback copy using a hidden textarea.
+ * Fallback: copies text using a hidden textarea element.
  */
 function fallbackCopy(text) {
   return new Promise((resolve, reject) => {
@@ -189,18 +190,12 @@ function fallbackCopy(text) {
     textArea.setAttribute('readonly', '');
 
     document.body.appendChild(textArea);
-
     try {
       textArea.focus();
       textArea.select();
       const successful = document.execCommand('copy');
       document.body.removeChild(textArea);
-
-      if (successful) {
-        resolve();
-      } else {
-        reject(new Error('execCommand copy failed'));
-      }
+      successful ? resolve() : reject(new Error('execCommand copy failed'));
     } catch (err) {
       document.body.removeChild(textArea);
       reject(err);
@@ -209,28 +204,36 @@ function fallbackCopy(text) {
 }
 
 /**
- * Copies plain text to clipboard using the most compatible API available.
+ * Copies plain text to the clipboard using the best available API.
+ * Prefers the modern asynchronous Clipboard API and falls back if needed.
  */
-function copyToClipboard(text) {
-  if (typeof browser !== 'undefined' && browser.clipboard && browser.clipboard.setString) {
-    return browser.clipboard.setString(text).catch(err => {
-      console.warn('browser.clipboard failed:', err);
-      return Promise.resolve(); // Don't fallback to DOM in background
-    });
+async function copyToClipboard(text) {
+  // Skip background contexts without document
+  if (typeof document === 'undefined') {
+    console.warn('Clipboard access not available (no DOM).');
+    return;
   }
 
+  // 1. Preferred: Asynchronous Clipboard API (navigator.clipboard)
   if (typeof navigator !== 'undefined' && navigator.clipboard && typeof window !== 'undefined' && window.isSecureContext) {
-    return navigator.clipboard.writeText(text).catch(err => {
-      console.warn('Clipboard API failed:', err);
-      return fallbackCopy(text);
-    });
+    try {
+      await navigator.clipboard.writeText(text);
+      return;
+    } catch (err) {
+      console.warn('navigator.clipboard.writeText failed:', err);
+    }
   }
 
-  return fallbackCopy(text);
+  // 2. Fallback: Hidden textarea and execCommand
+  try {
+    await fallbackCopy(text);
+  } catch (err) {
+    console.error('Fallback copy failed:', err);
+  }
 }
 
 /**
- * Copies as both HTML and plain text hyperlink (when supported).
+ * Copies both HTML and plain-text hyperlink formats when supported.
  */
 async function copyAsHyperlink(html, plain) {
   if (typeof navigator !== 'undefined' && navigator.clipboard && window.ClipboardItem) {
@@ -249,7 +252,7 @@ async function copyAsHyperlink(html, plain) {
 }
 
 /**
- * Loads user options from browser.storage or localStorage.
+ * Loads user options from browser.storage.local or localStorage.
  */
 function getOptions() {
   const defaults = { selectedTextPlacement: 'below', useApTitleCase: false };
@@ -265,7 +268,7 @@ function getOptions() {
         if (typeof window !== 'undefined' && window.localStorage) {
           localStorage.setItem('ttlcOptions', JSON.stringify(opts));
         }
-      } catch (e) { }
+      } catch { }
 
       return opts;
     }).catch(() => defaults);
@@ -281,14 +284,14 @@ function getOptions() {
           useApTitleCase: !!parsed.useApTitleCase
         });
       }
-    } catch (e) { }
+    } catch { }
   }
 
   return Promise.resolve(defaults);
 }
 
 /**
- * Saves user options to browser.storage or localStorage.
+ * Saves user options to browser.storage.local and localStorage.
  */
 function saveOptions(options) {
   const opts = {
@@ -305,7 +308,7 @@ function saveOptions(options) {
   if (typeof window !== 'undefined' && window.localStorage) {
     try {
       localStorage.setItem('ttlcOptions', JSON.stringify(opts));
-    } catch (e) { }
+    } catch { }
   }
 
   return Promise.all(promises).then(() => { });
