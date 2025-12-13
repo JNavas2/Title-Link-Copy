@@ -65,6 +65,13 @@ Creates a dual-format clipboard entry suitable for any destination:
 
 ## Version History
 
+* **v1.1.2**:
+    * **Minor bug fix:** Fix selected text bug on URL only
+
+* **v1.1.1**:
+    * **Minor bug fix:** Apostrophe handling
+    * **Minimum version** increased
+
 * **v1.1.0**:
     * **New Feature:** Added "Hyperlink" (rich text) copy support.
     * **Improvement:** Smart Context Menu (Unifies Page and Link actions into a single, clean menu).
