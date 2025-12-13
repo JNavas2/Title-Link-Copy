@@ -95,7 +95,7 @@ browser.contextMenus.onClicked.addListener((info, tab) => {
         break;
 
       case 'ttlc-action-url-only':
-        copyToClipboard(formatCopyText({ url }, options));
+        copyToClipboard(formatCopyText({ url, selectedText }, options));
         break;
 
       case 'ttlc-action-hyperlink': {
