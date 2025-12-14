@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Title-Link Copy - Options</title>
+  <style>
+    /**
+     * Title-Link Copy - Options Styles
+     * © John Navas 2025, All Rights Reserved
+     */
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu,
+        Cantarell, 'Helvetica Neue', sans-serif;
+      background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+      color: #333;
+      line-height: 1.5;
+      font-size: 13px;
+      padding-top: 40px;
+    }
+
+    /* Container - Fixed width, centered card */
+    .container {
+      max-width: 500px;
+      margin: 0 auto;
+      padding: 0 16px;
+    }
+
+    /* Card Style */
+    .combo-card {
+      background: white;
+      padding: 24px;
+      border-radius: 8px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    }
+
+    h2 {
+      font-size: 18px;
+      color: #222;
+      margin-bottom: 8px;
+      font-weight: 600;
+    }
+
+    .intro-text {
+      font-size: 13px;
+      color: #666;
+      margin-bottom: 10px;
+      /* Reduced from 20px */
+      line-height: 1.5;
+      padding-bottom: 16px;
+      border-bottom: 1px solid #eee;
+    }
+
+    /* Feature List */
+    .feature-list {
+      background: #f8f9fa;
+      padding: 12px 16px;
+      border-radius: 6px;
+      margin-bottom: 20px;
+      border: 1px solid #e9ecef;
+    }
+
+    .feature-list h3 {
+      font-size: 12px;
+      font-weight: 600;
+      margin-bottom: 8px;
+      color: #444;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .feature-list ul {
+      list-style: none;
+    }
+
+    .feature-list li {
+      font-size: 12px;
+      color: #555;
+      padding: 2px 0 2px 18px;
+      position: relative;
+    }
+
+    .feature-list li:before {
+      content: "✓";
+      position: absolute;
+      left: 0;
+      color: #667eea;
+      font-weight: bold;
+    }
+
+    code {
+      background: #eee;
+      padding: 2px 4px;
+      border-radius: 3px;
+      font-family: 'Courier New', monospace;
+      font-size: 11px;
+    }
+
+    /* Settings */
+    .setting-group {
+      margin-bottom: 20px;
+    }
+
+    .setting-group label {
+      display: block;
+      font-weight: 600;
+      color: #333;
+      margin-bottom: 4px;
+    }
+
+    .setting-description {
+      font-size: 12px;
+      color: #888;
+      margin-top: 2px;
+      margin-left: 24px;
+    }
+
+    /* Radio & Checkbox Inputs - Ultra Compact Layout */
+    .radio-group {
+      display: flex;
+      flex-direction: column;
+      gap: 0;
+    }
+
+    .radio-label,
+    .checkbox-label {
+      display: flex;
+      align-items: center;
+      cursor: pointer;
+      user-select: none;
+      padding: 1px 0;
+      transition: color 0.2s ease;
+      line-height: 1.4;
+    }
+
+    .radio-label:hover,
+    .checkbox-label:hover {
+      color: #000;
+    }
+
+    input[type="radio"],
+    input[type="checkbox"] {
+      margin-right: 8px;
+      cursor: pointer;
+      accent-color: #667eea;
+      width: 15px;
+      height: 15px;
+    }
+
+    /* Preview Box */
+    .preview-group {
+      margin-top: 24px;
+      padding-top: 16px;
+      border-top: 1px solid #eee;
+    }
+
+    .preview-group h3 {
+      font-size: 11px;
+      font-weight: 600;
+      text-transform: uppercase;
+      color: #888;
+      margin-bottom: 8px;
+      letter-spacing: 0.5px;
+    }
+
+    .preview-box {
+      background: #fdfdfd;
+      padding: 10px;
+      border-radius: 4px;
+      font-family: 'Courier New', monospace;
+      font-size: 11px;
+      color: #555;
+      line-height: 1.4;
+      border: 1px solid #e0e0e0;
+      border-left: 3px solid #667eea;
+    }
+
+    .preview-item {
+      word-break: break-all;
+    }
+
+    .preview-item.hidden {
+      display: none;
+    }
+
+    /* Auto-save status */
+    .status-message {
+      margin-top: 16px;
+      padding: 8px;
+      border-radius: 4px;
+      background: #d4edda;
+      color: #155724;
+      font-size: 12px;
+      font-weight: 600;
+      text-align: center;
+      opacity: 0;
+      transition: opacity 0.3s ease;
+    }
+
+    .status-message.show {
+      opacity: 1;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="container">
+    <div class="combo-card">
+      <h2>Title-Link Copy</h2>
+      <p class="intro-text">
+        Advanced copying of web page titles, URLs, and rich text hyperlinks.<br>
+        Access these features via the <b>Right-Click Menu</b> or <b>Keyboard Shortcuts</b>.
+      </p>
+
+      <div class="feature-list">
+        <h3>Functionality:</h3>
+        <ul>
+          <li>Page background → <code>Page Title + Page URL</code></li>
+          <li>Link context → <code>Link Text + Link URL</code></li>
+          <li>Option: Selected Text inclusion</li>
+          <li>Option: AP-style Title Case formatting</li>
+        </ul>
+      </div>
+
+      <div class="setting-group">
+        <label>Selected Text Placement:</label>
+        <div class="radio-group">
+          <label class="radio-label">
+            <input type="radio" name="text-placement" value="above" id="placement-above">
+            <span>Above the link</span>
+          </label>
+          <label class="radio-label">
+            <input type="radio" name="text-placement" value="below" id="placement-below">
+            <span>Below the link</span>
+          </label>
+          <label class="radio-label">
+            <input type="radio" name="text-placement" value="none" id="placement-none">
+            <span>Don't include selected text</span>
+          </label>
+        </div>
+      </div>
+
+      <div class="setting-group">
+        <label class="checkbox-label">
+          <input type="checkbox" id="ap-title-case" name="ap-title-case">
+          <span>Apply AP-style title casing</span>
+        </label>
+        <p class="setting-description">
+          Formats titles per AP Stylebook rules (e.g., "this is a test" → "This Is a Test").
+        </p>
+      </div>
+
+      <div class="preview-group">
+        <h3>Live Preview</h3>
+        <div class="preview-box">
+          <div class="preview-item" id="preview-title">example title here</div>
+          <div class="preview-item" id="preview-link">https://example.com</div>
+          <div class="preview-item hidden" id="preview-selected">Selected text excerpt</div>
+        </div>
+      </div>
+
+      <div class="status-message" id="auto-save-status">✓ Settings auto-saved</div>
+    </div>
+  </div>
+
+  <script src="utils.js"></script>
+  <script src="options.js"></script>
+</body>
+
+</html>
