@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "Title-Link Copy: AP-style Casing & Hyperlink",
-  "short_name": "Title-Link Copy",
+  "short_name": "Title-Link",
   "description": "AP-style title casing + selected text options for perfect link sharing",
   "author": "John Navas",
   "version": "1.1.2",
@@ -19,9 +19,6 @@
     "contextMenus",
     "scripting",
     "storage"
-  ],
-  "host_permissions": [
-    "<all_urls>"
   ],
   "background": {
     "service_worker": "service_worker.js"
