@@ -57,3 +57,8 @@ Creates a dual-format clipboard entry suitable for any destination:
 * **Rich Text Editors (Word, Google Docs, Email):** Pastes as a clickable, blue anchor link with the Title as the text.
     * *Example:* [The Page Title](https://example.com)
 * **Plain Text Editors (Notepad, Code):** Falls back to the standard "Title \n URL" format automatically.
+
+## Version History
+
+* **v1.1.2**:
+    * **Initial release**
