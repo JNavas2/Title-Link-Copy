@@ -1,14 +1,22 @@
 # Title-Link Copy: AP-style Casing & Hyperlink
-Privacy-focused Firefox extension for Desktop and Android that creates perfect citations. Easily copy page titles, URLs, or **rich text hyperlinks** with advanced formatting options, including AP-Style smart capitalization and selected text citation.
+Privacy-focused browser extension for **Chrome**, **Edge**, and **Firefox** (Desktop & Android). Easily copy page titles, URLs, or **rich text hyperlinks** with advanced formatting options, including AP-Style smart capitalization and selected text citation.
 
 ## Browser Compatibility
 
-✅ **Fully Compatible with Firefox for Android** and **Firefox Desktop**.
-Unlike many clipboard extensions that only function on desktop, Title-Link Copy is optimized for the mobile experience. It features a responsive popup specifically designed for Android screens, allowing you to access advanced formatting options on the go.
+Title-Link Copy is built to work wherever you do:
+
+| Platform | Browser | Support |
+| :--- | :--- | :--- |
+| **Desktop** | **Google Chrome** | ✅ Fully Supported (Manifest V3) |
+| **Desktop** | **Microsoft Edge** | ✅ Fully Supported (Manifest V3) |
+| **Desktop** | **Mozilla Firefox** | ✅ Fully Supported |
+| **Mobile** | **Firefox for Android** | ✅ Optimized Mobile Experience |
+
+> **Note for Mobile Users:** Unlike many clipboard extensions, this tool is optimized for Firefox for Android, featuring a responsive popup specifically designed for touch screens.
 
 ## Features
 
-### 🖱️ Smart Context Menu (Desktop)
+### 🖱️ Smart Context Menu (All Desktop Browsers)
 Right-click anywhere to access a clean, context-aware submenu that adapts to what you clicked:
 
 * **Smart Actions** (Works on Page Background OR Links):
@@ -17,15 +25,16 @@ Right-click anywhere to access a clean, context-aware submenu that adapts to wha
     * 🔗 **URL only**
     * 🌐 **Hyperlink** (Copies as a clickable rich text link)
 
-### 📱 Responsive Popup (Android)
-A clean, button-based interface available via the browser toolbar:
+### 📱 Responsive Popup (Firefox for Android)
+A clean, button-based interface available via the browser toolbar on mobile:
 * Quick-copy buttons for **Title+Link**, **Title Only**, **Link Only**, and **Hyperlink**.
-* **Embedded Settings:** Configure AP-Style casing and text placement directly inside the popup without opening a separate tab.
+* **Embedded Settings:** Configure AP-Style casing and text placement directly inside the popup.
 * **Auto-Save:** Settings changes are saved instantly.
 
 ### ⌨️ Keyboard Shortcuts
-Streamline your workflow with global shortcuts (customizable in Firefox Add-on settings):
-* Commands available for all four copy modes, including `Copy Hyperlink`.
+Streamline your workflow with global shortcuts.
+* **Chrome/Edge:** Go to `chrome://extensions/shortcuts` to configure.
+* **Firefox:** Go to `about:addons` -> Gear Icon -> "Manage Extension Shortcuts".
 
 ### 🧠 Advanced Formatting
 * **AP-Style Title Casing:** Features a smart algorithm that formats titles according to AP Stylebook guidelines.
@@ -35,14 +44,16 @@ Streamline your workflow with global shortcuts (customizable in Firefox Add-on s
 
 ### 🔒 Privacy Focused
 * **Zero Data Collection:** This extension does not track you, collect analytics, or transmit data.
-* **Minimal Permissions:** Requires only `activeTab`, `contextMenus`, and `clipboardWrite`. It uses local storage for settings, meaning it does **not** require the broad `storage` permission.
+* **Offline Functionality:** All formatting logic happens locally on your device.
 
 ## Permissions Explained
-This extension requests the absolute minimum permissions required to function. Here is exactly what each permission allows:
+This extension requests the absolute minimum permissions required to function. Permissions may vary slightly depending on your browser (Manifest V2 vs V3), but the intent remains the same:
 
-* **`activeTab`**: This permission allows the extension to read the Title and URL of the *current* tab only when you explicitly interact with the extension (e.g., click the toolbar button or a context menu item). It does not run in the background on other tabs.
-* **`contextMenus`**: This allows the extension to add the "Title-Link Copy" items to your right-click menu.
-* **`clipboardWrite`**: This is required to programmatically write the formatted text (or rich text hyperlink) to your system clipboard.
+* **`activeTab`**: Allows the extension to read the Title and URL of the *current* tab only when you explicitly interact with it (click the menu or shortcut). It does not run in the background.
+* **`contextMenus`**: Allows the extension to add "Title-Link Copy" to your right-click menu.
+* **`storage`**: Used to save your preferences (like AP Casing or Text Placement options).
+* **`scripting` (Chrome/Edge)**: Required by modern browsers to execute the copy command and read selected text safely.
+* **`clipboardWrite` (Firefox)**: Required to programmatically write text to your system clipboard.
 
 ## Usage Guide
 
@@ -53,28 +64,5 @@ Formats the clipboard content on separate lines for easy pasting into plain text
 
 ```text
 The Page Title (AP Styled if enabled)
-https://www.example.com/article
+[https://www.example.com/article](https://www.example.com/article)
 This is the specific text you selected on the page.
-```
-
-#### 2. Hyperlink Copy (🌐)
-Creates a dual-format clipboard entry suitable for any destination:
-* **Rich Text Editors (Word, Google Docs, Email):** Pastes as a clickable, blue anchor link with the Title as the text.
-    * *Example:* [The Page Title](https://example.com)
-* **Plain Text Editors (Notepad, Code):** Falls back to the standard "Title \n URL" format automatically.
-
-## Version History
-
-* **v1.1.2**:
-    * **Minor bug fix:** Fix selected text bug on URL only
-
-* **v1.1.1**:
-    * **Minor bug fix:** Apostrophe handling
-    * **Minimum version** increased
-
-* **v1.1.0**:
-    * **New Feature:** Added "Hyperlink" (rich text) copy support.
-    * **Improvement:** Smart Context Menu (Unifies Page and Link actions into a single, clean menu).
-
-* **v1.0.0**:
-    * **Initial Release** with Title, URL, and AP-Style formatting support.
