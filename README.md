@@ -8,7 +8,7 @@ Title-Link Copy is built to work wherever you do:
 | Platform | Browser | Support |
 | :--- | :--- | :--- |
 | **Desktop** | **[Google Chrome](https://chromewebstore.google.com/detail/title-link-copy-ap-style/kpdbnfaebcenjihjapmdmccnmehfcngh)** | ✅ Fully Supported (Manifest V3) |
-| **Desktop** | **Microsoft Edge** | ✅ Fully Supported (Manifest V3) |
+| **Desktop** | **[Microsoft Edge](https://microsoftedge.microsoft.com/addons/detail/titlelink-copy-apstyle/ppabemggmdekeamihepdhedjpfenlboa)** | ✅ Fully Supported (Manifest V3) |
 | **Desktop** | **[Mozilla Firefox](https://addons.mozilla.org/en-US/firefox/addon/title-link-copy/)** | ✅ Fully Supported |
 | **Mobile** | **[Firefox for Android](https://addons.mozilla.org/en-US/firefox/addon/title-link-copy/)** | ✅ Optimized Mobile Experience |
 
