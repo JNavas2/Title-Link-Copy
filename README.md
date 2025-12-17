@@ -64,7 +64,7 @@ Formats the clipboard content on separate lines for easy pasting into plain text
 
 ```text
 The Page Title (AP Styled if enabled)
-[https://www.example.com/article](https://www.example.com/article)
+https://www.example.com/article
 This is the specific text you selected on the page.
 ```
 
