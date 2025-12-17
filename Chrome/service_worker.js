@@ -17,9 +17,9 @@ function initializeContextMenus() {
     contexts: ["page", "selection", "link"]
   });
 
-  browser.contextMenus.create({ id: "ttlc-action-title-url", parentId: "ttlc-main-menu", title: "📝 Title + URL", contexts: ["page", "selection", "link"] });
+  browser.contextMenus.create({ id: "ttlc-action-title-url", parentId: "ttlc-main-menu", title: "📝 Title + Link", contexts: ["page", "selection", "link"] });
   browser.contextMenus.create({ id: "ttlc-action-title-only", parentId: "ttlc-main-menu", title: "📋 Title only", contexts: ["page", "selection", "link"] });
-  browser.contextMenus.create({ id: "ttlc-action-url-only", parentId: "ttlc-main-menu", title: "🔗 URL only", contexts: ["page", "selection", "link"] });
+  browser.contextMenus.create({ id: "ttlc-action-url-only", parentId: "ttlc-main-menu", title: "🔗 Link only", contexts: ["page", "selection", "link"] });
   browser.contextMenus.create({ id: "ttlc-action-hyperlink", parentId: "ttlc-main-menu", title: "🌐 Hyperlink", contexts: ["page", "selection", "link"] });
   browser.contextMenus.create({ id: "ttlc-separator", type: "separator", parentId: "ttlc-main-menu", contexts: ["page", "selection", "link"] });
   browser.contextMenus.create({ id: "ttlc-options", parentId: "ttlc-main-menu", title: "⚙️ Options...", contexts: ["all"] });

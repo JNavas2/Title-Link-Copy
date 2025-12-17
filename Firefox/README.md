@@ -1,5 +1,5 @@
 # Title-Link Copy: AP-style Casing & Hyperlink
-Privacy-focused Firefox extension for Desktop and Android that creates perfect citations. Easily copy page titles, URLs, or **rich text hyperlinks** with advanced formatting options, including AP-Style smart capitalization and selected text citation.
+Privacy-focused Firefox extension for Desktop and Android that creates perfect citations. Easily copy page Titles, Links, or **rich text Hyperlinks** with advanced formatting options, including AP-Style smart capitalization and selected text citation.
 
 ## Browser Compatibility
 
@@ -12,9 +12,9 @@ Unlike many clipboard extensions that only function on desktop, Title-Link Copy 
 Right-click anywhere to access a clean, context-aware submenu that adapts to what you clicked:
 
 * **Smart Actions** (Works on Page Background OR Links):
-    * 📝 **Title + URL** (Copies Page Title/URL or Link Text/URL)
+    * 📝 **Title + Link** (Copies Page Title/Link or Link Text/Link)
     * 📋 **Title only**
-    * 🔗 **URL only**
+    * 🔗 **Link only**
     * 🌐 **Hyperlink** (Copies as a clickable rich text link)
 
 ### 📱 Responsive Popup (Android)
@@ -40,7 +40,7 @@ Streamline your workflow with global shortcuts (customizable in Firefox Add-on s
 ## Permissions Explained
 This extension requests the absolute minimum permissions required to function. Here is exactly what each permission allows:
 
-* **`activeTab`**: This permission allows the extension to read the Title and URL of the *current* tab only when you explicitly interact with the extension (e.g., click the toolbar button or a context menu item). It does not run in the background on other tabs.
+* **`activeTab`**: This permission allows the extension to read the Title and Link of the *current* tab only when you explicitly interact with the extension (e.g., click the toolbar button or a context menu item). It does not run in the background on other tabs.
 * **`contextMenus`**: This allows the extension to add the "Title-Link Copy" items to your right-click menu.
 * **`clipboardWrite`**: This is required to programmatically write the formatted text (or rich text hyperlink) to your system clipboard.
 
@@ -62,12 +62,12 @@ Creates a dual-format clipboard entry suitable for any destination:
 
 * **Rich Text Editors (Word, Google Docs, Email):** Pastes as a clickable, blue anchor link with the Title as the text.
     * *Example:* [The Page Title](https://example.com)
-* **Plain Text Editors (Notepad, Code):** Falls back to the standard "Title \n URL" format automatically.
+* **Plain Text Editors (Notepad, Code):** Falls back to the standard "Title \n Link" format automatically.
 
 ## Version History
 
 * **v1.1.2**:
-    * **Minor bug fix:** Fix selected text bug on URL only
+    * **Minor bug fix:** Fix selected text bug on Link only
 
 * **v1.1.1**:
     * **Minor bug fix:** Apostrophe handling
@@ -78,4 +78,4 @@ Creates a dual-format clipboard entry suitable for any destination:
     * **Improvement:** Smart Context Menu (Unifies Page and Link actions into a single, clean menu).
 
 * **v1.0.0**:
-    * **Initial Release** with Title, URL, and AP-Style formatting support.
+    * **Initial Release** with Title, Link, and AP-Style formatting support.

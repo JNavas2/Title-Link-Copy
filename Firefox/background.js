@@ -13,11 +13,11 @@ function initializeContextMenus() {
     documentUrlPatterns: ["<all_urls>"]
   });
 
-  // Generic Item 1: Title + URL
+  // Generic Item 1: Title + Link
   browser.contextMenus.create({
     id: "ttlc-action-title-url",
     parentId: "ttlc-main-menu",
-    title: "📝 Title + URL",
+    title: "📝 Title + Link",
     contexts: ["page", "selection", "link"]
   });
 
@@ -29,11 +29,11 @@ function initializeContextMenus() {
     contexts: ["page", "selection", "link"]
   });
 
-  // Generic Item 3: URL Only
+  // Generic Item 3: Link Only
   browser.contextMenus.create({
     id: "ttlc-action-url-only",
     parentId: "ttlc-main-menu",
-    title: "🔗 URL only",
+    title: "🔗 Link only",
     contexts: ["page", "selection", "link"]
   });
 
@@ -135,52 +135,60 @@ browser.runtime.onInstalled.addListener((details) => {
 initializeContextMenus();
 
 browser.commands.onCommand.addListener(async (command) => {
-  const tab = await browser.tabs.query({ active: true, currentWindow: true });
-  if (!tab[0]) return;
+  const tabs = await browser.tabs.query({ active: true, currentWindow: true });
+  const tab = tabs[0];
+  if (!tab) return;
 
   const options = await getOptions();
+
+  // Get selection from the page for keyboard shortcuts
+  const results = await browser.tabs.executeScript(tab.id, {
+    code: 'window.getSelection().toString().trim()'
+  });
+  const selectedText = results[0] || '';
 
   switch (command) {
     case 'copy-title-link':
       const titleLinkText = formatCopyText({
-        title: tab[0].title,
-        url: tab[0].url
+        title: tab.title,
+        url: tab.url,
+        selectedText
       }, options);
       copyToClipboard(titleLinkText);
       break;
 
     case 'copy-title-only':
       const titleOnlyText = formatCopyText({
-        title: tab[0].title
+        title: tab.title,
+        selectedText
       }, options);
       copyToClipboard(titleOnlyText);
       break;
 
     case 'copy-link-only':
-      copyToClipboard(tab[0].url);
+      const linkOnlyText = formatCopyText({
+        url: tab.url,
+        selectedText
+      }, options);
+      copyToClipboard(linkOnlyText);
       break;
 
     case 'copy-hyperlink': {
-      const results = await browser.tabs.executeScript(tab[0].id, {
-        code: 'window.getSelection().toString().trim()'
-      });
-      const selectedText = results[0] || '';
-
-      let title = tab[0].title;
+      let title = tab.title;
       if (options.useApTitleCase) {
         title = apStyleTitleCase(title);
       }
 
-      let html = `<a href="${tab[0].url}">${title}</a>`;
-      let plain = `${title}\n${tab[0].url}`;
+      let html = `<a href="${tab.url}">${title}</a>`;
+      let plain = `${title}\n${tab.url}`;
 
       if (selectedText && options.selectedTextPlacement !== 'none') {
         if (options.selectedTextPlacement === 'above') {
-          html = `${escapeHtml(selectedText)}<br><a href="${tab[0].url}">${title}</a>`;
-          plain = `${selectedText}\n${title}\n${tab[0].url}`;
+          html = `${escapeHtml(selectedText)}<br><a href="${tab.url}">${title}</a>`;
+          plain = `${selectedText}\n${title}\n${tab.url}`;
         } else {
-          html = `<a href="${tab[0].url}">${title}</a><br>${escapeHtml(selectedText)}`;
-          plain = `${title}\n${tab[0].url}\n${selectedText}`;
+          html = `<a href="${tab.url}">${title}</a><br>${escapeHtml(selectedText)}`;
+          plain = `${title}\n${tab.url}\n${selectedText}`;
         }
       }
 

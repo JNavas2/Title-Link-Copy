@@ -72,8 +72,19 @@ document.addEventListener('DOMContentLoaded', async () => {
       const tab = await browser.tabs.query({ active: true, currentWindow: true });
       if (!tab[0]) return;
 
+      const options = await getOptions();
+      const url = tab[0].url;
+
+      const results = await browser.tabs.executeScript(tab[0].id, {
+        code: 'window.getSelection().toString()'
+      });
+      const selectedText = results[0] || '';
+
+      // Uses formatCopyText to respect Selected Text placement options
+      const copyText = formatCopyText({ url, selectedText }, options);
+
       try {
-        await copyToClipboard(tab[0].url);
+        await copyToClipboard(copyText);
         showStatus('✓ Link copied!', 1200, true);
       } catch (err) {
         showStatus('✗ Failed to copy');

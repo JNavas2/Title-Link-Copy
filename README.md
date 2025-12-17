@@ -1,5 +1,5 @@
 # Title-Link Copy: AP-style Casing & Hyperlink
-Privacy-focused browser extension for **Chrome**, **Edge**, and **Firefox** (Desktop & Android). Easily copy page titles, URLs, or **rich text hyperlinks** with advanced formatting options, including AP-Style smart capitalization and selected text citation.
+Privacy-focused browser extension for **Chrome**, **Edge**, and **Firefox** (Desktop & Android). Easily copy page Titles, Links, or **rich text Hyperlinks** with advanced formatting options, including AP-Style smart capitalization and selected text citation.
 
 ## Browser Compatibility
 
@@ -20,9 +20,9 @@ Title-Link Copy is built to work wherever you do:
 Right-click anywhere to access a clean, context-aware submenu that adapts to what you clicked:
 
 * **Smart Actions** (Works on Page Background OR Links):
-    * 📝 **Title + URL** (Copies Page Title/URL or Link Text/URL)
+    * 📝 **Title + Link** (Copies Page Title/Link or Link Text/Link)
     * 📋 **Title only**
-    * 🔗 **URL only**
+    * 🔗 **Link only**
     * 🌐 **Hyperlink** (Copies as a clickable rich text link)
 
 ### 📱 Responsive Popup (Firefox for Android)
@@ -49,7 +49,7 @@ Streamline your workflow with global shortcuts.
 ## Permissions Explained
 This extension requests the absolute minimum permissions required to function. Permissions may vary slightly depending on your browser (Manifest V2 vs V3), but the intent remains the same:
 
-* **`activeTab`**: Allows the extension to read the Title and URL of the *current* tab only when you explicitly interact with it (click the menu or shortcut). It does not run in the background.
+* **`activeTab`**: Allows the extension to read the Title and Link of the *current* tab only when you explicitly interact with it (click the menu or shortcut). It does not run in the background.
 * **`contextMenus`**: Allows the extension to add "Title-Link Copy" to your right-click menu.
 * **`storage`**: Used to save your preferences (like AP Casing or Text Placement options).
 * **`scripting` (Chrome/Edge)**: Required by modern browsers to execute the copy command and read selected text safely.
@@ -73,4 +73,4 @@ Creates a dual-format clipboard entry suitable for any destination:
 
 * **Rich Text Editors (Word, Google Docs, Email):** Pastes as a clickable, blue anchor link with the Title as the text.
     * *Example:* [The Page Title](https://example.com)
-* **Plain Text Editors (Notepad, Code):** Falls back to the standard "Title \n URL" format automatically.
+* **Plain Text Editors (Notepad, Code):** Falls back to the standard "Title \n Link" format automatically.
