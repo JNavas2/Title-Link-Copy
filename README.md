@@ -49,7 +49,8 @@ Streamline your workflow with global shortcuts.
 ## Permissions Explained
 This extension requests the absolute minimum permissions required to function. Permissions may vary slightly depending on your browser (Manifest V2 vs V3), but the intent remains the same:
 
-* **`activeTab`**: Allows the extension to read the Title and Link of the *current* tab only when you explicitly interact with it (click the menu or shortcut). It does not run in the background.
+* **`activeTab` (Firefox)**: Allows the extension to read the Title and Link of the *current* tab only when you explicitly interact with it (click the menu or shortcut). It does not run in the background.
+* **`optional_host_permissions` (Chrome/Edge)**: Allows the extension to read the Title and Link of the current tab only when you explicitly interact with it (click the menu or shortcut). It does not run in the background.
 * **`contextMenus`**: Allows the extension to add "Title-Link Copy" to your right-click menu.
 * **`storage`**: Used to save your preferences (like AP Casing or Text Placement options).
 * **`scripting` (Chrome/Edge)**: Required by modern browsers to execute the copy command and read selected text safely.
