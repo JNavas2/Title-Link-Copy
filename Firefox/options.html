@@ -6,86 +6,51 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Title-Link Copy - Options</title>
   <style>
-    /**
-     * Title-Link Copy - Options Styles (Dual Context Menus)
-     * © John Navas 2025, All Rights Reserved
-     */
-
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-    }
-
-    html {
-      scroll-behavior: smooth;
-    }
-
     body {
-      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu,
-        Cantarell, 'Helvetica Neue', sans-serif;
-      background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+      font-family: -apple-system, Segoe UI, sans-serif;
+      background: #f0f2f5;
+      display: flex;
+      padding: 20px;
       color: #333;
-      line-height: 1.6;
+      margin: 0;
+      justify-content: center;
+      align-items: flex-start;
     }
 
-    /* Container - 90% width on Android, controlled on desktop */
-    .container {
-      max-width: 90%;
-      width: 90%;
-      margin: 0 auto;
-      padding: 12px;
-    }
-
-    /* Sections */
-    .section {
-      transition: opacity 0.3s ease;
-    }
-
-    .section.hidden {
-      display: none;
-    }
-
-    /* Cards */
-    .combo-section {
-      margin-bottom: 0;
-    }
-
-    .combo-card {
+    .card {
       background: white;
-      padding: 16px;
+      padding: 18px 22px;
       border-radius: 8px;
-      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+      width: 100%;
+      max-width: 420px;
+      height: fit-content;
     }
 
-    .combo-card h2 {
-      font-size: 18px;
-      color: #333;
-      margin-bottom: 4px;
-      font-weight: 600;
+    h2 {
+      margin: 0 0 6px 0;
+      font-size: 19px;
     }
 
-    .intro-text {
+    .intro {
       font-size: 13px;
-      color: #666;
+      color: #555;
       margin-bottom: 12px;
       line-height: 1.4;
     }
 
     .feature-list {
-      text-align: left;
       background: #f9f9f9;
       padding: 10px;
       border-radius: 6px;
-      margin-bottom: 12px;
+      margin-bottom: 15px;
       font-size: 12px;
     }
 
     .feature-list h3 {
-      font-size: 12px;
-      font-weight: 600;
-      margin-bottom: 6px;
-      color: #333;
+      margin: 0 0 6px 0;
+      font-size: 13px;
+      color: #111;
     }
 
     .feature-list ul {
@@ -95,33 +60,23 @@
     }
 
     .feature-list li {
-      padding: 3px 0;
-      font-size: 11px;
-      color: #555;
-      padding-left: 18px;
-      position: relative;
+      margin-bottom: 4px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
       line-height: 1.3;
     }
 
-    .feature-list li:before {
-      content: "✓";
-      position: absolute;
-      left: 0;
-      color: #667eea;
-      font-weight: bold;
-      font-size: 12px;
-    }
-
-    /* Platform badges - TIGHTENED ONLY */
-    .platform-badge {
+    .badge {
       display: inline-flex;
       align-items: center;
-      gap: 2px;
-      padding: 2px 6px;
-      border-radius: 10px;
+      gap: 4px;
+      padding: 1px 6px;
+      border-radius: 4px;
       font-size: 10px;
-      font-weight: 600;
-      margin: 0;
+      font-weight: 700;
+      text-transform: uppercase;
+      min-width: 85px;
     }
 
     .desktop {
@@ -131,324 +86,130 @@
 
     .android {
       background: #e8f5e8;
-      color: #388e3c;
+      color: #2e7d32;
     }
 
-    /* Setting Groups */
-    .setting-group {
-      margin-bottom: 12px;
-      padding-bottom: 12px;
-      border-bottom: 1px solid #f0f0f0;
+    .settings-badge {
+      background: #eceff1;
+      color: #546e7a;
     }
 
-    .setting-group:last-of-type {
-      border-bottom: none;
-    }
-
-    .setting-group label {
-      display: block;
-      font-size: 12px;
-      font-weight: 600;
-      color: #333;
-      margin-bottom: 6px;
-    }
-
-    .setting-description {
-      font-size: 11px;
-      color: #999;
-      margin-bottom: 6px;
-      line-height: 1.3;
-    }
-
-    /* Radio Buttons - Fixed Alignment */
-    .radio-group {
-      display: flex;
-      flex-direction: column;
-      gap: 4px;
-    }
-
-    .radio-label {
-      display: flex;
-      align-items: center;
-      cursor: pointer;
-      font-size: 12px;
-      color: #555;
-      user-select: none;
-      padding: 8px;
-      border-radius: 4px;
-      transition: background 0.2s ease;
-      min-height: 44px;
-      -webkit-touch-callout: none;
-      -webkit-user-select: none;
-      line-height: 1.3;
-    }
-
-    .radio-label:active {
-      background: #f0f0f0;
-    }
-
-    .radio-label input[type="radio"] {
-      margin-right: 10px;
-      cursor: pointer;
-      width: 18px;
-      height: 18px;
-      accent-color: #667eea;
-      flex-shrink: 0;
-      margin-top: 0;
-      vertical-align: middle;
-    }
-
-    .radio-label span {
-      flex: 1;
-    }
-
-    /* Checkboxes - Fixed Alignment */
-    .checkbox-label {
-      display: flex;
-      align-items: center;
-      cursor: pointer;
-      font-size: 12px;
-      font-weight: 600;
-      color: #333;
-      user-select: none;
-      margin-bottom: 6px;
-      padding: 8px;
-      border-radius: 4px;
-      min-height: 44px;
-      -webkit-touch-callout: none;
-      -webkit-user-select: none;
-      line-height: 1.3;
-    }
-
-    .checkbox-label:active {
-      background: #f5f5f5;
-    }
-
-    .checkbox-label input[type="checkbox"] {
-      margin-right: 10px;
-      cursor: pointer;
-      width: 18px;
-      height: 18px;
-      accent-color: #667eea;
-      flex-shrink: 0;
-      margin-top: 0;
-      vertical-align: middle;
-    }
-
-    /* Preview */
-    .preview-group {
-      background: #f9f9f9;
-      padding: 10px;
-      border-radius: 6px;
-      border-left: 3px solid #667eea;
-      margin-bottom: 12px;
-    }
-
-    .preview-group h3 {
-      font-size: 12px;
-      font-weight: 600;
-      margin-bottom: 6px;
-      color: #333;
-    }
-
-    .preview-box {
-      background: white;
-      padding: 8px;
-      border-radius: 4px;
-      font-family: 'Courier New', monospace;
-      font-size: 10px;
-      color: #555;
-      line-height: 1.5;
+    fieldset {
       border: 1px solid #ddd;
+      border-radius: 4px;
+      padding: 8px 12px;
+      margin: 0;
     }
 
-    .preview-item {
-      padding: 2px 0;
-      word-break: break-word;
-    }
-
-    .preview-item.hidden {
-      display: none;
-    }
-
-    /* Auto-save status */
-    .status-message {
-      margin-top: 12px;
-      padding: 10px 12px;
-      border-radius: 6px;
-      background: linear-gradient(135deg, #d4edda 0%, #c3e6cb 100%);
-      color: #155724;
+    legend {
+      font-weight: bold;
+      padding: 0 6px;
       font-size: 13px;
-      font-weight: 600;
-      opacity: 0;
-      transition: all 0.3s ease;
+      color: #444;
+    }
+
+    .setting-row {
+      display: flex;
+      align-items: flex-start;
+      padding: 5px 0;
+      cursor: pointer;
+    }
+
+    .setting-row input {
+      width: 17px;
+      height: 17px;
+      margin: 2px 10px 0 0;
+      flex-shrink: 0;
+    }
+
+    .label-text {
+      font-size: 13px;
+      font-weight: 500;
+    }
+
+    .desc {
+      font-size: 11px;
+      color: #777;
+      display: block;
+      margin-top: 1px;
+      font-weight: 400;
+    }
+
+    .nested {
+      margin-left: 27px;
+    }
+
+    #auto-save-status {
       text-align: center;
-      border: 1px solid #c3e6cb;
+      font-size: 11px;
+      color: #2e7d32;
+      margin-top: 8px;
+      height: 14px;
+      opacity: 0;
+      transition: opacity 0.3s;
     }
 
-    .status-message.show {
+    #auto-save-status.show {
       opacity: 1;
-      transform: translateY(0);
-    }
-
-    /* Tablet Responsiveness */
-    @media (min-width: 481px) {
-      .container {
-        max-width: 600px;
-        padding: 16px;
-      }
-
-      .combo-card {
-        padding: 20px;
-      }
-
-      .combo-card h2 {
-        font-size: 20px;
-      }
-
-      .intro-text {
-        font-size: 14px;
-        margin-bottom: 14px;
-      }
-
-      .feature-list {
-        padding: 12px;
-        margin-bottom: 14px;
-      }
-
-      .feature-list h3 {
-        font-size: 13px;
-        margin-bottom: 8px;
-      }
-
-      .feature-list li {
-        font-size: 12px;
-      }
-
-      .setting-group {
-        margin-bottom: 16px;
-        padding-bottom: 16px;
-      }
-
-      .setting-group label {
-        font-size: 13px;
-        margin-bottom: 8px;
-      }
-
-      .setting-description {
-        font-size: 12px;
-        margin-bottom: 8px;
-      }
-
-      .radio-label {
-        font-size: 13px;
-        padding: 10px;
-        min-height: 48px;
-      }
-
-      .radio-label input[type="radio"] {
-        width: 20px;
-        height: 20px;
-      }
-
-      .checkbox-label {
-        font-size: 13px;
-        padding: 10px;
-        min-height: 48px;
-      }
-
-      .checkbox-label input[type="checkbox"] {
-        width: 20px;
-        height: 20px;
-      }
-
-      .preview-group {
-        margin-bottom: 16px;
-      }
-
-      .preview-box {
-        font-size: 11px;
-        line-height: 1.6;
-      }
-
-      .status-message {
-        font-size: 14px;
-        margin-top: 16px;
-        padding: 12px 16px;
-      }
-
-      /* Platform badges on tablet */
-      .platform-badge {
-        font-size: 11px;
-        padding: 3px 8px;
-        gap: 3px;
-      }
     }
   </style>
 </head>
 
 <body>
-  <div class="container">
-    <section class="section combo-section">
-      <div class="combo-card">
-        <h2>Title-Link Copy</h2>
-        <p class="intro-text">Advanced copying of web page and link Titles and/or Links.<br>
-          Includes ability to copy as Hyperlink.<br>
-          Right-click menus on desktop, popup on Android.</p>
+  <div class="card">
+    <h2>Title-Link Copy</h2>
+    <p class="intro">
+      Advanced copying of web page and link Titles and/or Links.<br>
+      Includes ability to copy as Hyperlink.<br>
+      Toolbar or context menu on desktop, popup on Android.
+    </p>
 
-        <div class="feature-list">
-          <h3>How it works:</h3>
-          <ul>
-            <li><span class="platform-badge desktop">🖥️ Desktop</span>Page background →
-              <code>Page Title + Page Link</code>
-            </li>
-            <li><span class="platform-badge desktop">🖥️ Desktop</span>Link → <code>Link Text + Link Link</code></li>
-            <li><span class="platform-badge android">📱 Android</span>Popup → <code>Current Page Title + Link</code></li>
-            <li>Option: Selected Text inclusion</li>
-            <li>Option: AP-style Title Case formatting</li>
-          </ul>
-        </div>
+    <div class="feature-list">
+      <h3>How it works:</h3>
+      <ul>
+        <li><span class="badge desktop">🖥️ Desktop</span> Icon or page context menu &rarr; Page Title and/or Link</li>
+        <li><span class="badge desktop">🖥️ Desktop</span> Link &rarr; Link Text and/or Link URL</li>
+        <li><span class="badge android">📱 Popup</span> Popup &rarr; Current Page Title and/or Link</li>
+        <li><span class="badge settings-badge">⚙️ Options</span> AP-style Title casing, Include Selected text</li>
+      </ul>
+    </div>
 
-        <div class="setting-group">
-          <label for="text-placement">Selected Text Placement:</label>
-          <div class="radio-group">
-            <label class="radio-label">
-              <input type="radio" name="text-placement" value="above" id="placement-above">
-              <span>Above the link</span>
-            </label>
-            <label class="radio-label">
-              <input type="radio" name="text-placement" value="below" id="placement-below">
-              <span>Below the link</span>
-            </label>
-            <label class="radio-label">
-              <input type="radio" name="text-placement" value="none" id="placement-none">
-              <span>Don't include selected text</span>
-            </label>
-          </div>
-        </div>
+    <fieldset>
+      <legend>Options</legend>
+      <label class="setting-row">
+        <input type="checkbox" id="show-context-menu" checked>
+        <span class="label-text">
+          Page Context Menu (desktop only)
+          <span class="desc">Enable page right-click menu. (Link right-click menu always enabled.)</span>
+        </span>
+      </label>
 
-        <div class="setting-group">
-          <label for="ap-title-case" class="checkbox-label">
-            <input type="checkbox" id="ap-title-case" name="ap-title-case">
-            <span>Apply AP-style title casing</span>
-          </label>
-          <p class="setting-description">
-            Formats titles per AP Stylebook rules (e.g., "this is a test" → "This Is a Test").
-          </p>
-        </div>
+      <label class="setting-row">
+        <input type="checkbox" id="ap-title-case" checked>
+        <span class="label-text">
+          AP-style Title casing
+          <span class="desc">"this is a test" &rarr; "This Is a Test"</span>
+        </span>
+      </label>
 
-        <div class="setting-group preview-group">
-          <h3>Live Preview:</h3>
-          <div class="preview-box">
-            <p class="preview-item" id="preview-title">example title here</p>
-            <p class="preview-item" id="preview-link">https://example.com</p>
-            <p class="preview-item hidden" id="preview-selected">Selected text excerpt</p>
-          </div>
-        </div>
+      <label class="setting-row">
+        <input type="checkbox" id="include-selected" checked>
+        <span class="label-text">Include selected text</span>
+      </label>
 
-        <div class="status-message" id="auto-save-status">✓ Settings auto-saved</div>
+      <div id="placement-container">
+        <label class="setting-row nested">
+          <input type="checkbox" id="placement-normal-above" checked>
+          <span class="label-text">Above normal link (else below)</span>
+        </label>
+        <label class="setting-row nested">
+          <input type="checkbox" id="placement-hyperlink-above">
+          <span class="label-text">Above hyperlink (else below)</span>
+        </label>
       </div>
-    </section>
+    </fieldset>
+
+    <div id="auto-save-status">✓ Settings auto-saved</div>
   </div>
 
   <script src="utils.js"></script>

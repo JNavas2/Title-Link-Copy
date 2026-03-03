@@ -62,9 +62,7 @@
       flex-direction: column;
       gap: 8px;
       width: fit-content;
-      /* Shrink to fit the widest button */
       margin: 0 auto;
-      /* Center the group horizontally */
     }
 
     /* UNIFIED BUTTON STYLES */
@@ -83,7 +81,6 @@
       min-height: 44px;
       justify-content: flex-start;
       width: 100%;
-      /* Stretch to fill the .button-group wrapper */
       white-space: nowrap;
     }
 
@@ -128,9 +125,10 @@
       border: 1px solid #e0e0e0;
     }
 
+    /* FIXED: Reduced margin and padding to close the gap */
     .setting-group {
-      margin-bottom: 12px;
-      padding-bottom: 12px;
+      margin-bottom: 2px;
+      padding-bottom: 2px;
       border-bottom: 1px solid #f0f0f0;
     }
 
@@ -143,10 +141,9 @@
       font-size: 12px;
       font-weight: 600;
       color: #333;
-      margin-bottom: 6px;
+      margin-bottom: 2px;
     }
 
-    /* Font Size 13px */
     .setting-description {
       font-size: 13px;
       color: #999;
@@ -154,43 +151,12 @@
       line-height: 1.3;
     }
 
-    .radio-group {
-      display: flex;
-      flex-direction: column;
-      gap: 4px;
+    .checkbox-label.nested {
+      padding-left: 24px;
+      font-weight: normal;
     }
 
-    .radio-label {
-      display: flex;
-      align-items: center;
-      cursor: pointer;
-      font-size: 12px;
-      color: #555;
-      user-select: none;
-      padding: 8px;
-      border-radius: 4px;
-      transition: background 0.2s ease;
-      min-height: 40px;
-    }
-
-    .radio-label:active {
-      background: #f0f0f0;
-    }
-
-    .radio-label input[type="radio"] {
-      margin-right: 10px;
-      width: 16px;
-      height: 16px;
-      accent-color: #667eea;
-      margin-top: 0;
-    }
-
-    /* OPTICAL ALIGNMENT FIX: Increased to -3px */
-    .radio-label span {
-      position: relative;
-      top: -3px;
-    }
-
+    /* FIXED: Reduced padding and min-height to close the gap */
     .checkbox-label {
       display: flex;
       align-items: center;
@@ -199,9 +165,9 @@
       font-weight: 600;
       color: #333;
       user-select: none;
-      padding: 8px;
+      padding: 4px 8px;
       border-radius: 4px;
-      min-height: 40px;
+      min-height: 32px;
     }
 
     .checkbox-label:active {
@@ -216,50 +182,11 @@
       margin-top: 0;
     }
 
-    /* OPTICAL ALIGNMENT FIX: Increased to -3px */
     .checkbox-label span {
       position: relative;
       top: -3px;
     }
 
-    .preview-group {
-      background: #f0f7ff;
-      padding: 10px;
-      border-radius: 6px;
-      border-left: 3px solid #667eea;
-      margin-bottom: 12px;
-    }
-
-    .preview-group h3 {
-      font-size: 11px;
-      font-weight: 600;
-      margin-bottom: 6px;
-      color: #333;
-    }
-
-    .preview-box {
-      background: white;
-      padding: 8px;
-      border-radius: 4px;
-      font-family: 'Courier New', monospace;
-      font-size: 10px;
-      color: #555;
-      line-height: 1.4;
-      border: 1px solid #ddd;
-      max-height: 100px;
-      overflow-y: auto;
-    }
-
-    .preview-item {
-      padding: 1px 0;
-      word-break: break-word;
-    }
-
-    .preview-item.hidden {
-      display: none;
-    }
-
-    /* Auto-save status */
     .auto-save-status {
       font-size: 11px;
       color: #2e7d32;
@@ -277,7 +204,6 @@
       opacity: 1;
     }
 
-    /* Status */
     .popup-status {
       font-size: 12px;
       color: #2e7d32;
@@ -294,7 +220,6 @@
       opacity: 1;
     }
 
-    /* Responsive - Desktop constraint only */
     @media (min-width: 481px) {
       .popup-container {
         max-width: 380px;
@@ -338,39 +263,26 @@
 
       <div class="combo-card">
         <div class="setting-group">
-          <label for="text-placement">Selected Text Placement:</label>
-          <div class="radio-group">
-            <label class="radio-label">
-              <input type="radio" name="text-placement" value="above" id="placement-above">
-              <span>Above the link</span>
-            </label>
-            <label class="radio-label">
-              <input type="radio" name="text-placement" value="below" id="placement-below">
-              <span>Below the link</span>
-            </label>
-            <label class="radio-label">
-              <input type="radio" name="text-placement" value="none" id="placement-none">
-              <span>Don't include selected text</span>
-            </label>
-          </div>
-        </div>
-
-        <div class="setting-group">
           <label class="checkbox-label" for="ap-title-case">
-            <input type="checkbox" id="ap-title-case" name="ap-title-case">
-            <span>Apply AP-style title casing</span>
+            <input type="checkbox" id="ap-title-case" name="ap-title-case" checked>
+            <span>AP-style Title casing ("this is a test"→"This Is a Test")</span>
           </label>
-          <p class="setting-description">
-            Automatically format titles in AP-style title case.
-          </p>
         </div>
 
-        <div class="setting-group preview-group">
-          <h3>Preview:</h3>
-          <div class="preview-box">
-            <p class="preview-item" id="preview-title">Example Title Here</p>
-            <p class="preview-item" id="preview-link">https://example.com</p>
-            <p class="preview-item hidden" id="preview-selected">Selected text excerpt</p>
+        <div class="setting-group" id="selected-options">
+          <label class="checkbox-label" for="include-selected">
+            <input type="checkbox" id="include-selected" name="include-selected" checked>
+            <span>Include selected text</span>
+          </label>
+          <div class="setting-description" id="placement-container">
+            <label class="checkbox-label nested" for="placement-normal-above">
+              <input type="checkbox" id="placement-normal-above" name="placement-normal-above" checked>
+              <span>Above normal link (else below)</span>
+            </label>
+            <label class="checkbox-label nested" for="placement-hyperlink-above">
+              <input type="checkbox" id="placement-hyperlink-above" name="placement-hyperlink-above">
+              <span>Above hyperlink (else below)</span>
+            </label>
           </div>
         </div>
 

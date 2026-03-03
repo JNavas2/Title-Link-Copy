@@ -1,11 +1,13 @@
 /**
  * Title-Link Copy - Background Script
+ * RESTORED VERBOSE VERSION: Prior Working Code + Toolbar Bridge
  * © John Navas 2025, All Rights Reserved
  */
 
 function initializeContextMenus() {
   browser.contextMenus.removeAll();
 
+  // PRIOR WORKING LOGIC: Register menus immediately
   browser.contextMenus.create({
     id: "ttlc-main-menu",
     title: "Title-Link Copy",
@@ -60,6 +62,9 @@ function initializeContextMenus() {
   });
 }
 
+/**
+ * Handle Context Menu clicks
+ */
 browser.contextMenus.onClicked.addListener((info, tab) => {
   if (info.menuItemId === 'ttlc-options') {
     browser.runtime.openOptionsPage();
@@ -107,7 +112,7 @@ browser.contextMenus.onClicked.addListener((info, tab) => {
         let html = `<a href="${url}">${linkTitle}</a>`;
         let plain = `${linkTitle}\n${url}`;
 
-        // Handle selected text placement
+        // Handle selected text placement (Matches Prior Code Logic)
         if (selectedText && options.selectedTextPlacement !== 'none') {
           if (options.selectedTextPlacement === 'above') {
             html = `${escapeHtml(selectedText)}<br><a href="${url}">${linkTitle}</a>`;
@@ -125,6 +130,21 @@ browser.contextMenus.onClicked.addListener((info, tab) => {
   }).catch(console.error);
 });
 
+/**
+ * Message Listener for the Toolbar Dropdown
+ */
+browser.runtime.onMessage.addListener((request) => {
+  const actionMap = {
+    'copyTitleLink': 'copy-title-link',
+    'copyTitleOnly': 'copy-title-only',
+    'copyLinkOnly': 'copy-link-only',
+    'copyHyperlink': 'copy-hyperlink'
+  };
+  if (actionMap[request.action]) {
+    handleAction(actionMap[request.action]);
+  }
+});
+
 browser.runtime.onInstalled.addListener((details) => {
   if (details.reason === 'install') {
     browser.tabs.create({ url: 'options.html' });
@@ -134,17 +154,20 @@ browser.runtime.onInstalled.addListener((details) => {
 
 initializeContextMenus();
 
-browser.commands.onCommand.addListener(async (command) => {
+/**
+ * Handle Toolbar Dropdown & Keyboard Commands
+ */
+async function handleAction(command) {
   const tabs = await browser.tabs.query({ active: true, currentWindow: true });
   const tab = tabs[0];
   if (!tab) return;
 
   const options = await getOptions();
 
-  // Get selection from the page for keyboard shortcuts
+  // Get selection from the page for keyboard/toolbar actions
   const results = await browser.tabs.executeScript(tab.id, {
     code: 'window.getSelection().toString().trim()'
-  });
+  }).catch(() => ['']);
   const selectedText = results[0] || '';
 
   switch (command) {
@@ -196,4 +219,9 @@ browser.commands.onCommand.addListener(async (command) => {
       break;
     }
   }
-});
+}
+
+/**
+ * Listen for Keyboard Shortcuts
+ */
+browser.commands.onCommand.addListener(handleAction);

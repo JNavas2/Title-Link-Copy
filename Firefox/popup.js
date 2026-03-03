@@ -1,10 +1,9 @@
 /**
- * Title-Link Copy - Popup Script
- * Handles popup UI interactions + embedded options for Android
+ * Title-Link Copy - Popup Script (Android)
+ * Handles mobile UI interactions + auto-save options
  * © John Navas 2025, All Rights Reserved
  */
 
-// Updated to include autoClose parameter
 function showStatus(message, duration = 2000, autoClose = false) {
   const statusEl = document.getElementById('status-message');
   if (!statusEl) return;
@@ -20,7 +19,6 @@ function showStatus(message, duration = 2000, autoClose = false) {
 }
 
 document.addEventListener('DOMContentLoaded', async () => {
-  // Simplified handlers - no redundant element checks
   const handlers = {
     async 'copy-title-link'() {
       const tab = await browser.tabs.query({ active: true, currentWindow: true });
@@ -38,7 +36,6 @@ document.addEventListener('DOMContentLoaded', async () => {
       const copyText = formatCopyText({ title, url, selectedText }, options);
       try {
         await copyToClipboard(copyText);
-        // Show success and close after 1.2 seconds
         showStatus('✓ Title + Link copied!', 1200, true);
       } catch (err) {
         showStatus('✗ Failed to copy');
@@ -80,9 +77,7 @@ document.addEventListener('DOMContentLoaded', async () => {
       });
       const selectedText = results[0] || '';
 
-      // Uses formatCopyText to respect Selected Text placement options
       const copyText = formatCopyText({ url, selectedText }, options);
-
       try {
         await copyToClipboard(copyText);
         showStatus('✓ Link copied!', 1200, true);
@@ -112,13 +107,15 @@ document.addEventListener('DOMContentLoaded', async () => {
       let html = `<a href="${url}">${title}</a>`;
       let plain = `${title}\n${url}`;
 
-      if (selectedText && options.selectedTextPlacement !== 'none') {
-        if (options.selectedTextPlacement === 'above') {
-          html = `${escapeHtml(selectedText)}<br><a href="${url}">${title}</a>`;
-          plain = `${selectedText}\n${title}\n${url}`;
+      if (selectedText && options.includeSelectedText) {
+        // Fix: Multi-line support and honoring placement preference
+        const selHtml = escapeHtml(selectedText).replace(/\n/g, '<br>');
+        if (options.placeAboveHyperlink) {
+          html = `${selHtml}<br>${html}`;
+          plain = `${selectedText}\n${plain}`;
         } else {
-          html = `<a href="${url}">${title}</a><br>${escapeHtml(selectedText)}`;
-          plain = `${title}\n${url}\n${selectedText}`;
+          html = `${html}<br>${selHtml}`;
+          plain = `${plain}\n${selectedText}`;
         }
       }
 
@@ -132,7 +129,6 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
   };
 
-  // Attach handlers safely (already verified elements exist)
   Object.entries(handlers).forEach(([id, handler]) => {
     const element = document.getElementById(id);
     if (element) {
