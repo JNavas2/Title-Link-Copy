@@ -4,6 +4,20 @@
  * © John Navas 2025, All Rights Reserved
  */
 
+let IS_ANDROID = false;
+
+// Platform detection (Archive Page logic)
+browser.runtime.getPlatformInfo().then(info => {
+  IS_ANDROID = (info.os === "android");
+  if (IS_ANDROID) {
+    browser.browserAction.setPopup({ popup: "popup.html" });
+  }
+  initializeContextMenus();
+}).catch(err => {
+  console.error("Platform detection failed:", err);
+  initializeContextMenus();
+});
+
 function initializeContextMenus() {
   browser.contextMenus.removeAll();
 
