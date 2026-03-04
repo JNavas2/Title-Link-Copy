@@ -1,6 +1,6 @@
 /**
  * Title-Link Copy - Background Script
- * RESTORED VERBOSE VERSION: Prior Working Code + Toolbar Bridge
+ * RESTORED VERBOSE VERSION: Prior Working Code + Toolbar Bridge + HTML NEWLINE FIX
  * © John Navas 2025, All Rights Reserved
  */
 
@@ -112,13 +112,16 @@ browser.contextMenus.onClicked.addListener((info, tab) => {
         let html = `<a href="${url}">${linkTitle}</a>`;
         let plain = `${linkTitle}\n${url}`;
 
-        // Handle selected text placement (Matches Prior Code Logic)
+        // Handle selected text placement (Matches Prior Code Logic) + HTML NEWLINE FIX
         if (selectedText && options.selectedTextPlacement !== 'none') {
+          // Safer newline → <br> conversion (handles \r\n, \n, \r)
+          const htmlSel = escapeHtml(selectedText).replace(/\r?\n|\r/g, '<br>');
+          
           if (options.selectedTextPlacement === 'above') {
-            html = `${escapeHtml(selectedText)}<br><a href="${url}">${linkTitle}</a>`;
+            html = `${htmlSel}<br><a href="${url}">${linkTitle}</a>`;
             plain = `${selectedText}\n${linkTitle}\n${url}`;
           } else {
-            html = `<a href="${url}">${linkTitle}</a><br>${escapeHtml(selectedText)}`;
+            html = `<a href="${url}">${linkTitle}</a><br>${htmlSel}`;
             plain = `${linkTitle}\n${url}\n${selectedText}`;
           }
         }
@@ -206,11 +209,14 @@ async function handleAction(command) {
       let plain = `${title}\n${tab.url}`;
 
       if (selectedText && options.selectedTextPlacement !== 'none') {
+        // Safer newline → <br> conversion (handles \r\n, \n, \r)
+        const htmlSel = escapeHtml(selectedText).replace(/\r?\n|\r/g, '<br>');
+        
         if (options.selectedTextPlacement === 'above') {
-          html = `${escapeHtml(selectedText)}<br><a href="${tab.url}">${title}</a>`;
+          html = `${htmlSel}<br><a href="${tab.url}">${title}</a>`;
           plain = `${selectedText}\n${title}\n${tab.url}`;
         } else {
-          html = `<a href="${tab.url}">${title}</a><br>${escapeHtml(selectedText)}`;
+          html = `<a href="${tab.url}">${title}</a><br>${htmlSel}`;
           plain = `${title}\n${tab.url}\n${selectedText}`;
         }
       }
