@@ -13,7 +13,8 @@
       display: flex;
       justify-content: center;
       align-items: flex-start;
-      padding: 20px 20px; /* 40px from top, 20px side margin for mobile */
+      padding: 20px 20px;
+      /* 40px from top, 20px side margin for mobile */
       min-height: 100vh;
       color: #333;
       box-sizing: border-box;
@@ -26,7 +27,7 @@
       box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
       /* FIXED: Set to exactly 420px. On mobile, it fills the width minus the body padding. */
       width: 400px;
-      max-width: 100%; 
+      max-width: 100%;
       height: fit-content;
       box-sizing: border-box;
     }
@@ -171,7 +172,8 @@
     <div class="feature-list">
       <h3>How it works:</h3>
       <ul>
-        <li><span class="badge desktop">🖥️ Desktop</span> Toolbar icon or Page context menu → Page Title and/or Link</li>
+        <li><span class="badge desktop">🖥️ Desktop</span> Toolbar icon or Page context menu → Page Title and/or Link
+        </li>
         <li><span class="badge desktop">🖥️ Desktop</span> Link context menu → Link Text and/or Link URL</li>
         <li><span class="badge android">📱 Android</span> Popup → Current Page Title and/or Link</li>
         <li><span class="badge settings-badge">⚙️ Options</span> AP-style Title casing, Include Selected text</li>
@@ -203,6 +205,14 @@
           <span class="label-text">Above hyperlink (else below)</span>
         </label>
       </div>
+
+      <label class="setting-row">
+        <input type="checkbox" id="append-blank-line">
+        <span class="label-text">
+          Append blank line
+          <span class="desc">Android Clipboard History bug work-around</span>
+        </span>
+      </label>
     </fieldset>
 
     <div id="auto-save-status">✓ Settings auto-saved</div>

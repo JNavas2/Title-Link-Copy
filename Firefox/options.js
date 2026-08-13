@@ -39,7 +39,8 @@ async function autoSaveSettings() {
     useApTitleCase: !!document.getElementById('ap-title-case')?.checked,
     includeSelectedText: !!document.getElementById('include-selected')?.checked,
     placeAboveNormal: !!document.getElementById('placement-normal-above')?.checked,
-    placeAboveHyperlink: !!document.getElementById('placement-hyperlink-above')?.checked
+    placeAboveHyperlink: !!document.getElementById('placement-hyperlink-above')?.checked,
+    appendBlankLine: !!document.getElementById('append-blank-line')?.checked
   });
 
   // Guard: Only update showContextMenu if the element exists (Desktop only)
@@ -65,6 +66,7 @@ async function loadSettings() {
     placeAboveHyperlink: false,
     useApTitleCase: true,
     showContextMenu: true,
+    appendBlankLine: false,
     ...o
   };
 
@@ -91,7 +93,22 @@ async function loadSettings() {
   const showContextEl = document.getElementById('show-context-menu');
   if (showContextEl) showContextEl.checked = !!options.showContextMenu;
 
+  const appendBlankEl = document.getElementById('append-blank-line');
+  if (appendBlankEl) appendBlankEl.checked = !!options.appendBlankLine;
+
   togglePlacementContainer();
+
+  // Force Append blank line OFF and disabled on desktop, regardless of saved value
+  browser.runtime.getPlatformInfo().then(info => {
+    const appendBlankEl = document.getElementById('append-blank-line');
+    if (!appendBlankEl) return;
+
+    if (info.os !== 'android') {
+      appendBlankEl.checked = false;
+      appendBlankEl.disabled = true;
+      appendBlankEl.parentElement.style.opacity = 0.5;
+    }
+  });
 }
 
 // Initialization handler

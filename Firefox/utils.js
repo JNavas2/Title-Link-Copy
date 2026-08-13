@@ -167,6 +167,14 @@ function formatCopyText(items, options) {
     lines.push(items.selectedText);
   }
 
+  if (options.appendBlankLine) {            // Android history pasting fix option
+    switch (lines.length) {
+      case 2:
+        return lines.join('\r\n') + '\n ';  // Title + URL
+      case 3:
+        return lines.join('\n') + '\n ';    // Title + selected text + URL
+    }
+  }
   return lines.join('\n');
 }
 
@@ -255,7 +263,8 @@ function getOptions() {
     placeAboveNormal: true,
     placeAboveHyperlink: false,
     useApTitleCase: true,
-    showContextMenu: true
+    showContextMenu: true,
+    appendBlankLine: false
   };
 
   if (typeof browser !== 'undefined' && browser.storage && browser.storage.local && browser.storage.local.get) {
@@ -292,7 +301,8 @@ function saveOptions(options) {
     placeAboveNormal: options.placeAboveNormal !== false,
     placeAboveHyperlink: !!options.placeAboveHyperlink,
     useApTitleCase: !!options.useApTitleCase,
-    showContextMenu: options.showContextMenu !== false
+    showContextMenu: options.showContextMenu !== false,
+    appendBlankLine: !!options.appendBlankLine
   };
 
   const promises = [];
