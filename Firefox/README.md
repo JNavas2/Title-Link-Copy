@@ -51,10 +51,11 @@ Creates a dual-format entry:
 * **Plain Text**: Automatically falls back to plain text format.
 
 ## Version History
+* **v1.2.7**: Handle edge case failure to respond to Android touch (revised).
+* **v1.2.6**: Handle edge case failure to respond to Android touch (revised).
 * **v1.2.5**: Handle edge case failure to respond to Android touch.
 * **v1.2.4**: Added Option to work around Android History-Paste bug on another screen.
 * **v1.2.3**: Added Option to work around Android History-Paste bug (OFF by default).
 * **v1.2.2**: Fix Android action menu to restore native behavior.
 * **v1.2.1**: Options screen adjusted for Android.
 * **v1.2.0**: Added Toolbar icon drop-down menu, Split option for Selected Text placement, and formatting tweaks for Title Casing and Rich Text.
-* 
