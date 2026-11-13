@@ -1,146 +1,171 @@
 /**
  * Title-Link Copy - Background Service Worker (MV3 Chrome Version)
- * © John Navas 2025, All Rights Reserved
+ * Upgraded for v1.2.7: Uses activeTab + clipboardWrite & updated boolean logic
+ * Includes stability patches for restricted pages and menu race conditions
+ * © John Navas 2026, All Rights Reserved
  */
 
 importScripts('utils.js');
 
-const browser = chrome;
-
-// GATEKEEPER: Ensures permissions exist before running actions
-async function checkAccessAndRun(tab, actionFn) {
-  const hasAccess = await browser.permissions.contains({ origins: ["<all_urls>"] });
-  if (!hasAccess) {
-    browser.tabs.create({ url: browser.runtime.getURL("request.html") });
-    return;
-  }
-  await actionFn();
-}
-
-/**
- * FIXED: Gathers selection FIRST so it can be used by ALL commands
- */
 async function handleAction(tab, command, info = null) {
   const options = await getOptions();
   let items = { title: tab.title, url: tab.url, selectedText: null };
 
-  // 1. Handle Link Context (right-click on a specific link)
   if (info && info.linkUrl) {
     items.url = info.linkUrl;
-    items.title = info.selectionText || info.linkUrl;
+    const rawLinkTitle = info.selectionText || info.linkText || info.linkUrl;
+    items.title = typeof rawLinkTitle === 'string' ? rawLinkTitle.trim() : rawLinkTitle;
   }
 
-  // 2. GATHER SELECTION FIRST: Required for all commands if enabled
-  if (options.selectedTextPlacement !== 'none') {
+  // Safely fetch highlighted text and strictly trim phantom spaces
+  if (options.includeSelectedText) {
     try {
-      const selection = await browser.scripting.executeScript({
+      const selection = await chrome.scripting.executeScript({
         target: { tabId: tab.id },
         func: () => window.getSelection().toString()
       });
-      if (selection[0] && selection[0].result) {
-        items.selectedText = selection[0].result;
+      if (selection[0] && typeof selection[0].result === 'string') {
+        const trimmed = selection[0].result.trim();
+        if (trimmed && trimmed !== items.title) {
+          items.selectedText = trimmed;
+        }
       }
     } catch (e) {
-      console.warn("Could not read selection (likely a protected browser page)");
+      console.warn("Could not read selection (likely a protected browser page).");
     }
   }
 
-  // 3. COMMAND-SPECIFIC LOGIC
-
-  // TITLE ONLY (Includes selection per placement)
   if (command === 'title-only') {
-    let title = items.title;
-    if (options.useApTitleCase) title = apStyleTitleCase(title);
-
-    let output = title;
-    if (items.selectedText) {
-      output = (options.selectedTextPlacement === 'above')
-        ? `${items.selectedText}\n${title}`
-        : `${title}\n${items.selectedText}`;
-    }
-
-    await browser.scripting.executeScript({
-      target: { tabId: tab.id },
-      func: (text) => { navigator.clipboard.writeText(text); },
-      args: [output]
-    });
+    items.url = null;
+    const output = formatCopyText(items, options);
+    await executeCopy(tab.id, output);
     return;
   }
 
-  // LINK ONLY (Includes selection per placement)
   if (command === 'url-only') {
-    let output = items.url;
-    if (items.selectedText) {
-      output = (options.selectedTextPlacement === 'above')
-        ? `${items.selectedText}\n${items.url}`
-        : `${items.url}\n${items.selectedText}`;
-    }
-
-    await browser.scripting.executeScript({
-      target: { tabId: tab.id },
-      func: (text) => { navigator.clipboard.writeText(text); },
-      args: [output]
-    });
+    items.title = null;
+    const output = formatCopyText(items, options);
+    await executeCopy(tab.id, output);
     return;
   }
 
-  // HYPERLINK (Rich Text)
   if (command === 'hyperlink') {
-    let title = items.title;
+    let title = items.title || tab.title;
     if (options.useApTitleCase) title = apStyleTitleCase(title);
 
     const escapedUrl = escapeHtml(items.url);
     const escapedTitle = escapeHtml(title);
-    const linkTag = `<a href="${escapedUrl}">${escapedTitle}</a>`;
+    let htmlContent = `<a href="${escapedUrl}">${escapedTitle}</a>`;
+    let plainText = `${title}\n${items.url}`;
 
-    let htmlContent = linkTag;
-    if (items.selectedText) {
-      const escapedSelection = escapeHtml(items.selectedText).replace(/\n/g, '<br>');
-      if (options.selectedTextPlacement === 'above') {
-        htmlContent = `${escapedSelection}<br>${linkTag}`;
-      } else if (options.selectedTextPlacement === 'below') {
-        htmlContent = `${linkTag}<br>${escapedSelection}`;
+    if (items.selectedText && options.includeSelectedText) {
+      const escapedSelection = escapeHtml(items.selectedText).replace(/\r?\n|\r/g, '<br>');
+      if (options.placeAboveHyperlink) {
+        htmlContent = `${escapedSelection}<br>${htmlContent}`;
+        plainText = `${items.selectedText}\n${plainText}`;
+      } else {
+        htmlContent = `${htmlContent}<br>${escapedSelection}`;
+        plainText = `${plainText}\n${items.selectedText}`;
       }
     }
 
-    const plainText = formatCopyText(items, options);
+    if (options.appendBlankLine) {
+      plainText += '\n ';
+    }
 
-    await browser.scripting.executeScript({
-      target: { tabId: tab.id },
-      func: (h, p) => {
-        const item = new ClipboardItem({
-          "text/html": new Blob([h], { type: "text/html" }),
-          "text/plain": new Blob([p], { type: "text/plain" })
-        });
-        navigator.clipboard.write([item]);
-      },
-      args: [htmlContent, plainText]
-    });
+    try {
+      await chrome.scripting.executeScript({
+        target: { tabId: tab.id },
+        func: (h, p) => {
+          function fallback(str) {
+            const textArea = document.createElement('textarea');
+            textArea.value = str;
+            document.body.appendChild(textArea);
+            textArea.select();
+            document.execCommand('copy');
+            document.body.removeChild(textArea);
+          }
+
+          if (typeof ClipboardItem !== "undefined" && navigator.clipboard && navigator.clipboard.write) {
+            const item = new ClipboardItem({
+              "text/html": new Blob([h], { type: "text/html" }),
+              "text/plain": new Blob([p], { type: "text/plain" })
+            });
+            navigator.clipboard.write([item]).catch(() => fallback(p));
+          } else {
+            fallback(p);
+          }
+        },
+        args: [htmlContent, plainText]
+      });
+    } catch (e) {
+      console.warn("Clipboard injection denied on this page (likely a restricted URL).");
+    }
     return;
   }
 
-  // DEFAULT: Title + Link command
-  const plainText = formatCopyText(items, options);
-  await browser.scripting.executeScript({
-    target: { tabId: tab.id },
-    func: (text) => { navigator.clipboard.writeText(text); },
-    args: [plainText]
+  const output = formatCopyText(items, options);
+  await executeCopy(tab.id, output);
+}
+
+async function executeCopy(tabId, text) {
+  try {
+    await chrome.scripting.executeScript({
+      target: { tabId: tabId },
+      func: (t) => {
+        if (navigator.clipboard && window.isSecureContext) {
+          navigator.clipboard.writeText(t).catch(() => fallback(t));
+        } else {
+          fallback(t);
+        }
+        function fallback(str) {
+          const textArea = document.createElement('textarea');
+          textArea.value = str;
+          document.body.appendChild(textArea);
+          textArea.select();
+          document.execCommand('copy');
+          document.body.removeChild(textArea);
+        }
+      },
+      args: [text]
+    });
+  } catch (err) {
+    console.warn("Clipboard injection denied on this page (likely a restricted URL).");
+  }
+}
+
+async function initializeContextMenus() {
+  await new Promise(resolve => chrome.contextMenus.removeAll(resolve));
+
+  const options = await getOptions();
+
+  if (options.showContextMenu !== false) {
+    const createMenu = (props) => {
+      chrome.contextMenus.create(props, () => {
+        if (chrome.runtime.lastError) { }
+      });
+    };
+
+    createMenu({ id: "ttlc-main-menu", title: "Title-Link Copy", contexts: ["page", "selection", "link"] });
+    createMenu({ id: "ttlc-action-title-url", parentId: "ttlc-main-menu", title: "📝 Title + Link", contexts: ["page", "selection", "link"] });
+    createMenu({ id: "ttlc-action-title-only", parentId: "ttlc-main-menu", title: "📋 Title only", contexts: ["page", "selection", "link"] });
+    createMenu({ id: "ttlc-action-url-only", parentId: "ttlc-main-menu", title: "🔗 Link only", contexts: ["page", "selection", "link"] });
+    createMenu({ id: "ttlc-action-hyperlink", parentId: "ttlc-main-menu", title: "🌐 Hyperlink", contexts: ["page", "selection", "link"] });
+    createMenu({ id: "ttlc-separator", type: "separator", parentId: "ttlc-main-menu", contexts: ["page", "selection", "link"] });
+    createMenu({ id: "ttlc-options", parentId: "ttlc-main-menu", title: "⚙️ Options...", contexts: ["all"] });
+  }
+}
+
+function configurePlatformPopup() {
+  chrome.runtime.getPlatformInfo((info) => {
+    if (info && info.os === 'android') {
+      chrome.action.setPopup({ popup: 'popup.html' });
+    }
   });
 }
 
-function initializeContextMenus() {
-  browser.contextMenus.removeAll();
-  browser.contextMenus.create({ id: "ttlc-main-menu", title: "Title-Link Copy", contexts: ["page", "selection", "link"] });
-  browser.contextMenus.create({ id: "ttlc-action-title-url", parentId: "ttlc-main-menu", title: "📝 Title + Link", contexts: ["page", "selection", "link"] });
-  browser.contextMenus.create({ id: "ttlc-action-title-only", parentId: "ttlc-main-menu", title: "📋 Title only", contexts: ["page", "selection", "link"] });
-  browser.contextMenus.create({ id: "ttlc-action-url-only", parentId: "ttlc-main-menu", title: "🔗 Link only", contexts: ["page", "selection", "link"] });
-  browser.contextMenus.create({ id: "ttlc-action-hyperlink", parentId: "ttlc-main-menu", title: "🌐 Hyperlink", contexts: ["page", "selection", "link"] });
-  browser.contextMenus.create({ id: "ttlc-separator", type: "separator", parentId: "ttlc-main-menu", contexts: ["page", "selection", "link"] });
-  browser.contextMenus.create({ id: "ttlc-options", parentId: "ttlc-main-menu", title: "⚙️ Options...", contexts: ["all"] });
-}
-
-browser.contextMenus.onClicked.addListener((info, tab) => {
-  if (info.menuItemId === 'ttlc-options') { browser.runtime.openOptionsPage(); return; }
+chrome.contextMenus.onClicked.addListener((info, tab) => {
+  if (info.menuItemId === 'ttlc-options') { chrome.runtime.openOptionsPage(); return; }
   let command;
   switch (info.menuItemId) {
     case 'ttlc-action-title-url': command = 'title-url'; break;
@@ -149,11 +174,11 @@ browser.contextMenus.onClicked.addListener((info, tab) => {
     case 'ttlc-action-hyperlink': command = 'hyperlink'; break;
     default: return;
   }
-  checkAccessAndRun(tab, () => handleAction(tab, command, info));
+  handleAction(tab, command, info);
 });
 
-browser.commands.onCommand.addListener(async (command) => {
-  const tabs = await browser.tabs.query({ active: true, currentWindow: true });
+chrome.commands.onCommand.addListener(async (command) => {
+  const tabs = await chrome.tabs.query({ active: true, currentWindow: true });
   const tab = tabs[0];
   if (!tab) return;
   let internalCommand;
@@ -164,15 +189,36 @@ browser.commands.onCommand.addListener(async (command) => {
     case 'copy-hyperlink': internalCommand = 'hyperlink'; break;
     default: return;
   }
-  checkAccessAndRun(tab, () => handleAction(tab, internalCommand));
+  handleAction(tab, internalCommand);
 });
 
-browser.runtime.onInstalled.addListener((details) => {
-  // Logic opens options for both fresh installs and updates
+chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
+  if (message.type === 'trigger-action' && message.command) {
+    chrome.tabs.query({ active: true, currentWindow: true }).then(tabs => {
+      const tab = tabs[0];
+      if (tab) {
+        handleAction(tab, message.command);
+      }
+    });
+  }
+});
+
+chrome.runtime.onInstalled.addListener((details) => {
   if (details.reason === 'install' || details.reason === 'update') {
-    browser.tabs.create({ url: 'options.html' });
+    chrome.tabs.create({ url: 'options.html' });
   }
   initializeContextMenus();
+  configurePlatformPopup();
 });
 
-initializeContextMenus();
+chrome.runtime.onStartup.addListener(() => {
+  configurePlatformPopup();
+});
+
+chrome.storage.onChanged.addListener((changes, area) => {
+  if (area === 'local' && changes.showContextMenu) {
+    initializeContextMenus();
+  }
+});
+
+configurePlatformPopup();

@@ -4,7 +4,7 @@
   "short_name": "Title-Link",
   "description": "AP-style title casing + selected text options for perfect link sharing",
   "author": "John Navas",
-  "version": "1.2.0",
+  "version": "1.2.7",
   "homepage_url": "https://github.com/JNavas2/Title-Link-Copy",
   "icons": {
     "16": "images/icon-16.png",
@@ -15,12 +15,11 @@
     "128": "images/icon-128.png"
   },
   "permissions": [
+    "activeTab",
+    "clipboardWrite",
     "contextMenus",
     "scripting",
     "storage"
-  ],
-  "optional_host_permissions": [
-    "<all_urls>"
   ],
   "background": {
     "service_worker": "service_worker.js"
@@ -45,7 +44,8 @@
   },
   "action": {
     "default_title": "Title-Link Copy …",
-    "default_icon": "images/icon-32.png"
+    "default_icon": "images/icon-32.png",
+    "default_popup": "dropdown.html"
   },
   "options_ui": {
     "page": "options.html",

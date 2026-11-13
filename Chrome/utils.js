@@ -1,9 +1,11 @@
 /**
  * Title-Link Copy - Utility Module
  * Utility functions for text processing, title formatting, and clipboard operations
- * Supports Desktop (Chrome/Edge)
- * © John Navas 2025, All Rights Reserved
+ * Supports both desktop and Android (Chrome MV3 Version)
+ * © John Navas 2026, All Rights Reserved
  */
+
+const browser = typeof chrome !== 'undefined' ? chrome : window.browser;
 
 // Common articles, conjunctions, and prepositions ≤3 letters
 const minorWords = new Set([
@@ -65,8 +67,7 @@ function reassembleText({ words, separators }) {
 }
 
 /**
- * Converts text to AP-style title case.
- * Follows common headline capitalization rules similar to Associated Press style:
+ * Converts text to AP-style title case (Modified for CMOS "to" treatment).
  * - Capitalizes first and last words regardless of length.
  * - Capitalizes all words of four or more letters.
  * - Lowercases short conjunctions, prepositions, and articles (≤3 letters).
@@ -102,21 +103,19 @@ function apStyleTitleCase(text) {
     const lowerBase = base.toLowerCase();
     const lowerSuffix = suffix.toLowerCase();
 
+    // Capitalize first and last word
     if (i === 0 || i === len - 1) {
       result.push(lowerBase.charAt(0).toUpperCase() + lowerBase.slice(1) + lowerSuffix);
       continue;
     }
 
-    if (lowerBase === "to" && i + 1 < len) {
-      result.push("To");
-      continue;
-    }
-
+    // Capitalize words 4+ letters long
     if (base.length >= 4) {
       result.push(lowerBase.charAt(0).toUpperCase() + lowerBase.slice(1) + lowerSuffix);
       continue;
     }
 
+    // Lowercase minor words <= 3 letters (including "to")
     if (minorWords.has(lowerBase)) {
       result.push(lowerBase + lowerSuffix);
       continue;
@@ -132,7 +131,7 @@ function apStyleTitleCase(text) {
  * Escapes HTML special characters for safe clipboard copying.
  */
 function escapeHtml(str) {
-  return str.replace(/[&<>"']/g, m =>
+  return String(str || '').replace(/[&<>"']/g, m =>
     ({
       '&': '&amp;',
       '<': '&lt;',
@@ -145,6 +144,7 @@ function escapeHtml(str) {
 
 /**
  * Formats the copied text lines (e.g., title, link, selection).
+ * Synchronized with the checkbox boolean model.
  */
 function formatCopyText(items, options) {
   const lines = [];
@@ -157,7 +157,7 @@ function formatCopyText(items, options) {
     lines.push(title);
   }
 
-  if (items.selectedText && options.selectedTextPlacement === 'above') {
+  if (items.selectedText && options.includeSelectedText && options.placeAboveNormal) {
     lines.push(items.selectedText);
   }
 
@@ -165,10 +165,18 @@ function formatCopyText(items, options) {
     lines.push(items.url);
   }
 
-  if (items.selectedText && options.selectedTextPlacement === 'below') {
+  if (items.selectedText && options.includeSelectedText && !options.placeAboveNormal) {
     lines.push(items.selectedText);
   }
 
+  if (options.appendBlankLine) {            // Android history pasting fix option
+    switch (lines.length) {
+      case 2:
+        return lines.join('\r\n') + '\n ';  // Title + URL
+      case 3:
+        return lines.join('\n') + '\n ';    // Title + selected text + URL
+    }
+  }
   return lines.join('\n');
 }
 
@@ -205,16 +213,13 @@ function fallbackCopy(text) {
 
 /**
  * Copies plain text to the clipboard using the best available API.
- * Prefers the modern asynchronous Clipboard API and falls back if needed.
  */
 async function copyToClipboard(text) {
-  // Skip background contexts without document
   if (typeof document === 'undefined') {
     console.warn('Clipboard access not available (no DOM).');
     return;
   }
 
-  // 1. Preferred: Asynchronous Clipboard API (navigator.clipboard)
   if (typeof navigator !== 'undefined' && navigator.clipboard && typeof window !== 'undefined' && window.isSecureContext) {
     try {
       await navigator.clipboard.writeText(text);
@@ -224,7 +229,6 @@ async function copyToClipboard(text) {
     }
   }
 
-  // 2. Fallback: Hidden textarea and execCommand
   try {
     await fallbackCopy(text);
   } catch (err) {
@@ -253,23 +257,29 @@ async function copyAsHyperlink(html, plain) {
 
 /**
  * Loads user options from browser.storage.local or localStorage.
+ * Includes migration logic for legacy radio-button settings.
  */
 function getOptions() {
-  const defaults = { selectedTextPlacement: 'below', useApTitleCase: false };
+  const defaults = {
+    includeSelectedText: true,
+    placeAboveNormal: true,
+    placeAboveHyperlink: false,
+    useApTitleCase: true,
+    showContextMenu: true,
+    appendBlankLine: false
+  };
 
   if (typeof browser !== 'undefined' && browser.storage && browser.storage.local && browser.storage.local.get) {
-    return browser.storage.local.get(defaults).then(result => {
-      const opts = {
-        selectedTextPlacement: result.selectedTextPlacement || 'below',
-        useApTitleCase: !!result.useApTitleCase
-      };
-
-      try {
-        if (typeof window !== 'undefined' && window.localStorage) {
-          localStorage.setItem('ttlcOptions', JSON.stringify(opts));
-        }
-      } catch { }
-
+    return browser.storage.local.get(Object.assign({}, defaults, { selectedTextPlacement: undefined })).then(result => {
+      const opts = Object.assign({}, defaults, result);
+      delete opts.selectedTextPlacement;
+      // Support upgrade path from radio buttons to checkboxes
+      if (result.selectedTextPlacement !== undefined) {
+        opts.includeSelectedText = result.selectedTextPlacement !== 'none';
+        opts.placeAboveNormal = result.selectedTextPlacement === 'above';
+        opts.placeAboveHyperlink = result.selectedTextPlacement === 'above';
+        saveOptions(opts);
+      }
       return opts;
     }).catch(() => defaults);
   }
@@ -278,11 +288,7 @@ function getOptions() {
     try {
       const raw = localStorage.getItem('ttlcOptions');
       if (raw) {
-        const parsed = JSON.parse(raw);
-        return Promise.resolve({
-          selectedTextPlacement: parsed.selectedTextPlacement || 'below',
-          useApTitleCase: !!parsed.useApTitleCase
-        });
+        return Promise.resolve(Object.assign({}, defaults, JSON.parse(raw)));
       }
     } catch { }
   }
@@ -295,14 +301,21 @@ function getOptions() {
  */
 function saveOptions(options) {
   const opts = {
-    selectedTextPlacement: options.selectedTextPlacement || 'below',
-    useApTitleCase: !!options.useApTitleCase
+    includeSelectedText: !!options.includeSelectedText,
+    placeAboveNormal: options.placeAboveNormal !== false,
+    placeAboveHyperlink: !!options.placeAboveHyperlink,
+    useApTitleCase: !!options.useApTitleCase,
+    showContextMenu: options.showContextMenu !== false,
+    appendBlankLine: !!options.appendBlankLine
   };
 
   const promises = [];
 
   if (typeof browser !== 'undefined' && browser.storage && browser.storage.local && browser.storage.local.set) {
     promises.push(browser.storage.local.set(opts));
+    if (browser.storage.local.remove) {
+      promises.push(browser.storage.local.remove('selectedTextPlacement'));
+    }
   }
 
   if (typeof window !== 'undefined' && window.localStorage) {

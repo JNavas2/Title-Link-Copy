@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <style>
+        body {
+            width: max-content;
+            min-width: 130px;
+            margin: 0;
+            padding: 2px 0;
+            font-family: Arial, sans-serif;
+            cursor: default;
+            background-color: #fff;
+        }
+
+        .item {
+            padding: 8px 14px;
+            font-size: 14px;
+            color: #000;
+            white-space: nowrap;
+            transition: background-color 0.1s;
+            cursor: pointer;
+        }
+
+        .item:hover {
+            background-color: #eeeeee;
+        }
+
+        hr {
+            border: 0;
+            border-top: 1px solid #cccccc;
+            margin: 2px 0;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="mTitleLink" class="item">📝 Title + Link</div>
+    <div id="mTitleOnly" class="item">📋 Title only</div>
+    <div id="mLinkOnly" class="item">🔗 Link only</div>
+    <div id="mHyperlink" class="item">🌐 Hyperlink</div>
+    <hr>
+    <div id="mOptions" class="item">⚙️ Options...</div>
+
+    <!-- Utilities must load first so the dropdown can format and copy text -->
+    <script src="utils.js"></script>
+    <script src="dropdown.js"></script>
+</body>
+
+</html>

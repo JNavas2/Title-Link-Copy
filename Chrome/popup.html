@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Title-Link Copy Actions</title>
+  <style>
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      margin: 0;
+      padding: 16px 12px;
+      background: #ffffff;
+      min-width: 180px;
+    }
+
+    .button-container {
+      display: flex;
+      flex-direction: column;
+      align-items: stretch;
+      /* Forces all buttons to stretch to the same width */
+      width: max-content;
+      /* Shrink-wraps the container to the widest button */
+      margin: 0 auto;
+      /* Centers the button group in the popup */
+      gap: 10px;
+    }
+
+    .action-btn {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      white-space: nowrap;
+      background: #dbeafe;
+      border: 2px solid #bfdbfe;
+      padding: 11px 19px;
+      font-size: 14px;
+      font-weight: 600;
+      color: #1e3a8a;
+      cursor: pointer;
+      border-radius: 8px;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.04);
+      transition: all 0.2s ease;
+    }
+
+    .action-btn:active {
+      background: #bfdbfe;
+      box-shadow: none;
+      transform: translateY(1px);
+    }
+
+    .options-btn {
+      margin-top: 24px;
+      background: #fff2c4;
+      border-color: #fde047;
+      color: #654321;
+    }
+
+    .options-btn:active {
+      background: #fef08a;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="button-container">
+    <button class="action-btn menu-btn" data-cmd="title-url">📝 Title + Link</button>
+    <button class="action-btn menu-btn" data-cmd="title-only">📋 Title only</button>
+    <button class="action-btn menu-btn" data-cmd="url-only">🔗 Link only</button>
+    <button class="action-btn menu-btn" data-cmd="hyperlink">🌐 Hyperlink</button>
+    <button class="action-btn options-btn menu-btn" data-cmd="options">⚙️ Options...</button>
+  </div>
+
+  <script src="utils.js"></script>
+  <script src="popup.js"></script>
+</body>
+
+</html>
