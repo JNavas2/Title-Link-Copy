@@ -1,10 +1,10 @@
 {
   "manifest_version": 3,
-  "name": "Title-Link Copy: AP-style Casing & Hyperlink",
+  "name": "Title-Link Copy: AP Casing & Hyperlink",
   "short_name": "Title-Link",
   "description": "AP-style title casing + selected text options for perfect link sharing",
   "author": "John Navas",
-  "version": "1.2.7",
+  "version": "1.2.8",
   "homepage_url": "https://github.com/JNavas2/Title-Link-Copy",
   "icons": {
     "16": "images/icon-16.png",

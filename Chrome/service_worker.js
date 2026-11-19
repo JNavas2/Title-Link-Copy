@@ -13,8 +13,44 @@ async function handleAction(tab, command, info = null) {
 
   if (info && info.linkUrl) {
     items.url = info.linkUrl;
-    const rawLinkTitle = info.selectionText || info.linkText || info.linkUrl;
-    items.title = typeof rawLinkTitle === 'string' ? rawLinkTitle.trim() : rawLinkTitle;
+    let domLinkText = null;
+
+    try {
+      // Use activeTab to instantly grab the exact element under the cursor
+      const results = await chrome.scripting.executeScript({
+        target: { tabId: tab.id },
+        func: () => {
+          // Find the deepest element currently being hovered/right-clicked
+          const hoverChain = document.querySelectorAll(':hover');
+          const target = hoverChain.length > 0 ? hoverChain[hoverChain.length - 1] : document.activeElement;
+
+          if (!target) return null;
+
+          // Traverse up the HTML tree to find the <a> tag (handles WSJ's nested <div>s)
+          const anchor = target.closest('a');
+          if (!anchor) return null;
+
+          // Extract the visible text
+          if (anchor.innerText && anchor.innerText.trim()) return anchor.innerText.trim();
+
+          // Fallback if the user right-clicked an image link
+          const img = anchor.querySelector('img');
+          if (img && img.alt) return img.alt.trim();
+
+          return null;
+        }
+      });
+
+      if (results && results[0] && results[0].result) {
+        domLinkText = results[0].result;
+      }
+    } catch (e) {
+      console.warn("Could not read DOM for link text (likely a protected page).", e);
+    }
+
+    // Prioritize the physical DOM text, fallback to selection, fallback to Error String
+    const rawLinkTitle = domLinkText || info.selectionText || "[cannot access title, retry might work]";
+    items.title = rawLinkTitle;
   }
 
   // Safely fetch highlighted text and strictly trim phantom spaces
